@@ -41,6 +41,8 @@ export interface Carousel {
   cardInset?: number;
   /** Export aspect ratio; undefined = '4:5' (1080x1350). '1:1' posts to Instagram without cropping. */
   ratio?: Ratio;
+  /** Font used on the slides; undefined = the first Font (Heebo). */
+  fontId?: string;
   showBadge: boolean;
   slides: Slide[];
 }

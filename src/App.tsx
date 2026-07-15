@@ -4,6 +4,7 @@ import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
 import { getPalette } from './palettes';
 import { BACKDROPS } from './backdrops';
+import { FONTS } from './fonts';
 import { getVariations, variationIndex } from './variations';
 import { downloadAll, downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
@@ -246,6 +247,28 @@ export default function App() {
               })()}
             </div>
             <PalettePicker value={carousel.paletteId} onChange={changePalette} />
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-medium text-neutral-500">פונט</p>
+            <div className="flex flex-wrap gap-2">
+              {FONTS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setCarousel((c) => ({ ...c, fontId: f.id }))}
+                  className={`flex flex-col items-center rounded-lg border px-3 py-1.5 transition ${
+                    f.id === (carousel.fontId ?? FONTS[0].id)
+                      ? 'border-[#E1306C] bg-[#E1306C]/5 ring-1 ring-[#E1306C]'
+                      : 'border-neutral-200 hover:border-neutral-400'
+                  }`}
+                >
+                  <span style={{ fontFamily: f.family, fontWeight: f.headingWeight }} className="text-lg leading-6">
+                    אבגד
+                  </span>
+                  <span className="text-[10px] text-neutral-500">{f.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <label className="flex w-fit items-center gap-2 text-xs text-neutral-500">

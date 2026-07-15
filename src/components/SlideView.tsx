@@ -3,6 +3,7 @@ import type { Carousel, Slide, SizeStep } from '../types';
 import { SLIDE_W, slideHeight } from '../types';
 import { getPalette, type Palette } from '../palettes';
 import { getBackdrop } from '../backdrops';
+import { getFont } from '../fonts';
 import type { Roles } from '../types';
 
 const SIZE_MULT: Record<SizeStep, number> = { S: 0.85, M: 1, L: 1.18 };
@@ -33,6 +34,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
   const mult = SIZE_MULT[slide.style.size];
   const blurred = carousel.background === 'blurred';
   const cardInset = carousel.cardInset ?? 84;
+  const font = getFont(carousel.fontId);
 
   useLayoutEffect(() => {
     const el = contentRef.current;
@@ -55,7 +57,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
         height: slideHeight(carousel.ratio),
         background: bg,
         ...(blurred ? getBackdrop(carousel.backdropId).style(palette, roles, index) : undefined),
-        fontFamily: "'Heebo', sans-serif",
+        fontFamily: font.family,
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -90,7 +92,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
           <h2
             style={{
               color: accent,
-              fontWeight: 800,
+              fontWeight: font.headingWeight,
               fontSize: `calc(${84 * mult}px * var(--shrink, 1))`,
               lineHeight: 1.25,
               margin: 0,

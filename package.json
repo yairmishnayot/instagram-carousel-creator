@@ -9,8 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/alef": "^5.2.8",
+    "@fontsource/assistant": "^5.2.9",
+    "@fontsource/david-libre": "^5.2.8",
+    "@fontsource/frank-ruhl-libre": "^5.2.8",
     "@fontsource/heebo": "^5.2.8",
+    "@fontsource/miriam-libre": "^5.2.8",
+    "@fontsource/playpen-sans-hebrew": "^5.2.4",
     "@fontsource/rubik": "^5.2.8",
+    "@fontsource/secular-one": "^5.2.8",
+    "@fontsource/suez-one": "^5.2.8",
+    "@fontsource/varela-round": "^5.2.8",
     "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
     "react": "^19.2.7",
