@@ -75,6 +75,8 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
         style={{
           position: 'absolute',
           inset: blurred ? '164px' : '96px',
+          // Reserve room at the bottom so text never overlaps the logo.
+          bottom: carousel.logo ? 240 : undefined,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -114,6 +116,27 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
           </p>
         )}
       </div>
+      {carousel.logo && (
+        <img
+          src={carousel.logo}
+          alt=""
+          style={{
+            position: 'absolute',
+            // In blurred mode the circle straddles the card's bottom edge (card inset is 84px).
+            bottom: blurred ? 44 : 48,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: 160,
+            height: 160,
+            borderRadius: '50%',
+            background: '#ffffff',
+            padding: 18,
+            boxSizing: 'border-box',
+            objectFit: 'contain',
+            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.22)',
+          }}
+        />
+      )}
       {carousel.showBadge && (
         <div
           dir="ltr"

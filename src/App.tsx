@@ -15,10 +15,46 @@ const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
   { value: 'blurred', label: 'רקע מטושטש' },
 ];
 
+// Downscale the uploaded logo so the data URL stays small enough for the
+// localStorage draft; PNG keeps transparency.
+const LOGO_MAX_PX = 800;
+
+function fileToLogo(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, LOGO_MAX_PX / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('unreadable image'));
+    };
+    img.src = url;
+  });
+}
+
 export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
   const [exporting, setExporting] = useState(false);
   const nodes = useRef(new Map<string, HTMLDivElement>());
+  const logoInput = useRef<HTMLInputElement>(null);
+
+  const onLogoFile = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const logo = await fileToLogo(file);
+      setCarousel((c) => ({ ...c, logo }));
+    } catch {
+      window.alert('לא ניתן לקרוא את קובץ התמונה');
+    }
+  };
 
   useEffect(() => {
     const t = setTimeout(() => saveDraft(carousel), 300);
@@ -230,6 +266,50 @@ export default function App() {
               })()}
             </div>
           )}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-neutral-500">לוגו (אופציונלי)</span>
+            <input
+              ref={logoInput}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                onLogoFile(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+            {carousel.logo ? (
+              <>
+                <img
+                  src={carousel.logo}
+                  alt="לוגו"
+                  className="h-10 max-w-32 rounded-md border border-neutral-200 bg-white object-contain p-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => logoInput.current?.click()}
+                  className="rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-50"
+                >
+                  החלפה
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCarousel((c) => ({ ...c, logo: undefined }))}
+                  className="rounded-lg px-2 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50"
+                >
+                  הסרה
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => logoInput.current?.click()}
+                className="rounded-lg border border-dashed border-neutral-300 px-3 py-1.5 text-xs font-medium text-neutral-500 transition hover:border-[#E1306C] hover:text-[#E1306C]"
+              >
+                + העלאת לוגו
+              </button>
+            )}
+          </div>
           <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"

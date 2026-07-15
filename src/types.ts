@@ -34,6 +34,8 @@ export interface Carousel {
   background: BackgroundStyle;
   /** Which Backdrop design to use in 'blurred' mode; undefined = the first one. */
   backdropId?: string;
+  /** Optional logo (data URL) shown at the bottom of every slide. */
+  logo?: string;
   showBadge: boolean;
   slides: Slide[];
 }
