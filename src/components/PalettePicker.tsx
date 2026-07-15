@@ -7,7 +7,7 @@ interface Props {
 
 export default function PalettePicker({ value, onChange }: Props) {
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+    <div className="grid grid-cols-2 gap-2">
       {PALETTES.map((p) => (
         <button
           key={p.id}

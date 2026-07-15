@@ -208,8 +208,8 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-4xl flex-col gap-5 px-4 py-6">
-        <section className="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-sm">
+      <main className="mx-auto flex max-w-7xl flex-col items-start gap-5 px-4 py-6 lg:flex-row">
+        <aside className="flex w-full flex-col gap-4 rounded-2xl bg-white p-5 shadow-sm lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:w-80 lg:shrink-0 lg:overflow-y-auto">
           <input
             value={carousel.title}
             onChange={(e) => setCarousel((c) => ({ ...c, title: e.target.value }))}
@@ -394,8 +394,9 @@ export default function App() {
             />
             הצגת מספור שקופיות על התמונות
           </label>
-        </section>
+        </aside>
 
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-5">
         {carousel.slides.map((slide, i) => (
           <SlideCard
             key={slide.id}
@@ -423,6 +424,7 @@ export default function App() {
             ? `הגעתם למקסימום — אינסטגרם מאפשרת עד ${MAX_SLIDES} תמונות בקרוסלה`
             : '+ הוספת שקופית'}
         </button>
+        </div>
       </main>
     </div>
   );
