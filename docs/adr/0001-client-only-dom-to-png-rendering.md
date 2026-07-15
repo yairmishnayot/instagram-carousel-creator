@@ -1,0 +1,3 @@
+# Client-only app; slides rendered from DOM to PNG in the browser
+
+The app is a static SPA (React + Vite + TS + Tailwind) with no backend: slides are styled DOM nodes, exported to 1080×1350 PNGs via DOM-to-image capture (html-to-image) and zipped client-side (JSZip); drafts persist in localStorage. We chose DOM rendering over `<canvas>` drawing because browser text layout gives us correct Hebrew RTL shaping, wrapping, and font rendering for free — reimplementing RTL layout on canvas is error-prone. Consequence: the preview *is* the export (single source of truth), but export fidelity depends on the capture library handling web fonts correctly, and there is no server to add accounts or sharing later without an architectural change.
