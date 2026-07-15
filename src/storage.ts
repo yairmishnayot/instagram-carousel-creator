@@ -11,6 +11,7 @@ export function emptyCarousel(): Carousel {
   return {
     title: '',
     paletteId: PALETTES[0].id,
+    background: 'solid',
     showBadge: true,
     slides: [
       { id: newSlideId(), heading: '', body: '', style: { size: 'M', align: 'right' } },
@@ -24,7 +25,8 @@ export function loadDraft(): Carousel {
     if (!raw) return emptyCarousel();
     const parsed = JSON.parse(raw) as Carousel;
     if (!Array.isArray(parsed.slides) || parsed.slides.length === 0) return emptyCarousel();
-    return parsed;
+    // Drafts saved before the background option default to the original solid look.
+    return { ...parsed, background: parsed.background ?? 'solid' };
   } catch {
     return emptyCarousel();
   }

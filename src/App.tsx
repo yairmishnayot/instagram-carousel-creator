@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Carousel, Slide, SlideStyle } from './types';
-import { MAX_SLIDES } from './types';
+import type { BackgroundStyle, Carousel, Slide, SlideStyle } from './types';
+import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
 import { getPalette } from './palettes';
+import { BACKDROPS } from './backdrops';
 import { getVariations, variationIndex } from './variations';
 import { downloadAll, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
 import SlideCard from './components/SlideCard';
+import Segmented from './components/Segmented';
+
+const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
+  { value: 'solid', label: 'צבע אחיד' },
+  { value: 'blurred', label: 'רקע מטושטש' },
+];
 
 export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
@@ -180,6 +187,49 @@ export default function App() {
             </div>
             <PalettePicker value={carousel.paletteId} onChange={changePalette} />
           </div>
+          <label className="flex items-center gap-2 text-xs text-neutral-500">
+            סגנון רקע
+            <Segmented
+              options={BACKGROUNDS}
+              value={carousel.background}
+              onChange={(background) => setCarousel((c) => ({ ...c, background }))}
+            />
+          </label>
+          {carousel.background === 'blurred' && (
+            <div className="flex flex-wrap gap-2">
+              {(() => {
+                const palette = getPalette(carousel.paletteId);
+                const roles = carousel.roles ?? palette.defaultRoles;
+                const selectedId = carousel.backdropId ?? BACKDROPS[0].id;
+                return BACKDROPS.map((b) => (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => setCarousel((c) => ({ ...c, backdropId: b.id }))}
+                    className={`flex flex-col items-center gap-1 rounded-lg p-1.5 transition ${
+                      b.id === selectedId ? 'bg-neutral-100 ring-2 ring-[#E1306C]' : 'hover:bg-neutral-50'
+                    }`}
+                  >
+                    <span className="relative block h-20 w-16 overflow-hidden rounded-md border border-black/10">
+                      <span
+                        className="absolute"
+                        style={{
+                          top: 0,
+                          left: 0,
+                          width: SLIDE_W,
+                          height: SLIDE_H,
+                          transform: `scale(${64 / SLIDE_W})`,
+                          transformOrigin: 'top left',
+                          ...b.style(palette, roles, 0),
+                        }}
+                      />
+                    </span>
+                    <span className="text-[11px] font-medium text-neutral-600">{b.name}</span>
+                  </button>
+                ));
+              })()}
+            </div>
+          )}
           <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"

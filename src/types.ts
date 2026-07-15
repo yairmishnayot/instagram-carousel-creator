@@ -1,5 +1,6 @@
 export type Align = 'right' | 'center';
 export type SizeStep = 'S' | 'M' | 'L';
+export type BackgroundStyle = 'solid' | 'blurred';
 
 /** Indices into a Palette's 5 colors, per Color Role. */
 export interface Roles {
@@ -29,6 +30,10 @@ export interface Carousel {
   paletteId: string;
   /** Carousel-wide variation of the Palette's Color Roles; undefined = palette defaults. */
   roles?: Roles;
+  /** 'solid' = flat bg color; 'blurred' = abstract blurred backdrop with the content in a card. */
+  background: BackgroundStyle;
+  /** Which Backdrop design to use in 'blurred' mode; undefined = the first one. */
+  backdropId?: string;
   showBadge: boolean;
   slides: Slide[];
 }

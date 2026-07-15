@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react';
 import type { Carousel, Slide, SizeStep } from '../types';
 import { SLIDE_W, SLIDE_H } from '../types';
 import { getPalette, type Palette } from '../palettes';
+import { getBackdrop } from '../backdrops';
 import type { Roles } from '../types';
 
 const SIZE_MULT: Record<SizeStep, number> = { S: 0.85, M: 1, L: 1.18 };
@@ -30,6 +31,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
   const { palette, roles } = effectiveDesign(slide, carousel);
   const [bg, text, accent] = [palette.colors[roles.bg], palette.colors[roles.text], palette.colors[roles.accent]];
   const mult = SIZE_MULT[slide.style.size];
+  const blurred = carousel.background === 'blurred';
 
   useLayoutEffect(() => {
     const el = contentRef.current;
@@ -51,16 +53,28 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
         width: SLIDE_W,
         height: SLIDE_H,
         background: bg,
+        ...(blurred ? getBackdrop(carousel.backdropId).style(palette, roles, index) : undefined),
         fontFamily: "'Heebo', sans-serif",
         position: 'relative',
         overflow: 'hidden',
       }}
     >
+      {blurred && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: '84px',
+            background: bg,
+            borderRadius: 56,
+            boxShadow: '0 24px 64px rgba(0, 0, 0, 0.28)',
+          }}
+        />
+      )}
       <div
         ref={contentRef}
         style={{
           position: 'absolute',
-          inset: '96px',
+          inset: blurred ? '164px' : '96px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
