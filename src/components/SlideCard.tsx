@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Carousel, Slide, SlideStyle, Align, SizeStep } from '../types';
-import { SLIDE_W, SLIDE_H } from '../types';
+import { SLIDE_W, slideHeight } from '../types';
 import { PALETTES } from '../palettes';
 import SlideView, { effectiveDesign } from './SlideView';
 import Segmented from './Segmented';
@@ -160,7 +160,7 @@ export default function SlideCard(props: Props) {
       {/* Preview */}
       <div
         className="relative shrink-0 self-center overflow-hidden rounded-xl shadow-md sm:self-start"
-        style={{ width: SLIDE_W * SCALE, height: SLIDE_H * SCALE }}
+        style={{ width: SLIDE_W * SCALE, height: slideHeight(carousel.ratio) * SCALE }}
       >
         <div style={{ position: 'absolute', top: 0, left: 0, transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
           <SlideView

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import type { Carousel, Slide, SizeStep } from '../types';
-import { SLIDE_W, SLIDE_H } from '../types';
+import { SLIDE_W, slideHeight } from '../types';
 import { getPalette, type Palette } from '../palettes';
 import { getBackdrop } from '../backdrops';
 import type { Roles } from '../types';
@@ -32,6 +32,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
   const [bg, text, accent] = [palette.colors[roles.bg], palette.colors[roles.text], palette.colors[roles.accent]];
   const mult = SIZE_MULT[slide.style.size];
   const blurred = carousel.background === 'blurred';
+  const cardInset = carousel.cardInset ?? 84;
 
   useLayoutEffect(() => {
     const el = contentRef.current;
@@ -51,7 +52,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
       dir="rtl"
       style={{
         width: SLIDE_W,
-        height: SLIDE_H,
+        height: slideHeight(carousel.ratio),
         background: bg,
         ...(blurred ? getBackdrop(carousel.backdropId).style(palette, roles, index) : undefined),
         fontFamily: "'Heebo', sans-serif",
@@ -63,7 +64,7 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
         <div
           style={{
             position: 'absolute',
-            inset: '84px',
+            inset: cardInset,
             background: bg,
             borderRadius: 56,
             boxShadow: '0 24px 64px rgba(0, 0, 0, 0.28)',
@@ -74,9 +75,9 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
         ref={contentRef}
         style={{
           position: 'absolute',
-          inset: blurred ? '164px' : '96px',
+          inset: blurred ? cardInset + 80 : 96,
           // Reserve room at the bottom so text never overlaps the logo.
-          bottom: carousel.logo ? 240 : undefined,
+          bottom: carousel.logo ? (blurred ? cardInset + 150 : 240) : undefined,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -122,8 +123,8 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
           alt=""
           style={{
             position: 'absolute',
-            // In blurred mode the circle straddles the card's bottom edge (card inset is 84px).
-            bottom: blurred ? 44 : 48,
+            // In blurred mode the circle straddles the card's bottom edge.
+            bottom: blurred ? cardInset - 40 : 48,
             left: '50%',
             transform: 'translateX(-50%)',
             width: 160,

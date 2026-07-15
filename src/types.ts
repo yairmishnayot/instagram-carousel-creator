@@ -1,6 +1,7 @@
 export type Align = 'right' | 'center';
 export type SizeStep = 'S' | 'M' | 'L';
 export type BackgroundStyle = 'solid' | 'blurred';
+export type Ratio = '4:5' | '1:1';
 
 /** Indices into a Palette's 5 colors, per Color Role. */
 export interface Roles {
@@ -36,6 +37,10 @@ export interface Carousel {
   backdropId?: string;
   /** Optional logo (data URL) shown at the bottom of every slide. */
   logo?: string;
+  /** Margin (px) between the slide edge and the content card in 'blurred' mode; undefined = 84. */
+  cardInset?: number;
+  /** Export aspect ratio; undefined = '4:5' (1080x1350). '1:1' posts to Instagram without cropping. */
+  ratio?: Ratio;
   showBadge: boolean;
   slides: Slide[];
 }
@@ -43,3 +48,7 @@ export interface Carousel {
 export const MAX_SLIDES = 20;
 export const SLIDE_W = 1080;
 export const SLIDE_H = 1350;
+
+export function slideHeight(ratio: Ratio | undefined): number {
+  return ratio === '1:1' ? SLIDE_W : SLIDE_H;
+}

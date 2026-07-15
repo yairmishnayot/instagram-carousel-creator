@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import type { BackgroundStyle, Carousel, Slide, SlideStyle } from './types';
+import type { BackgroundStyle, Carousel, Ratio, Slide, SlideStyle } from './types';
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
 import { getPalette } from './palettes';
 import { BACKDROPS } from './backdrops';
 import { getVariations, variationIndex } from './variations';
-import { downloadAll, downloadSlide } from './export';
+import { downloadAll, downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
 import SlideCard from './components/SlideCard';
 import Segmented from './components/Segmented';
@@ -13,6 +13,11 @@ import Segmented from './components/Segmented';
 const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
   { value: 'solid', label: 'צבע אחיד' },
   { value: 'blurred', label: 'רקע מטושטש' },
+];
+
+const RATIOS: { value: Ratio; label: string }[] = [
+  { value: '4:5', label: '4:5 לאורך' },
+  { value: '1:1', label: '1:1 ריבוע' },
 ];
 
 // Downscale the uploaded logo so the data URL stays small enough for the
@@ -129,13 +134,24 @@ export default function App() {
       return { ...c, slides };
     });
 
+  const slideEls = () =>
+    carousel.slides
+      .map((s) => nodes.current.get(s.id))
+      .filter((el): el is HTMLDivElement => !!el);
+
   const handleDownloadAll = async () => {
     setExporting(true);
     try {
-      const els = carousel.slides
-        .map((s) => nodes.current.get(s.id))
-        .filter((el): el is HTMLDivElement => !!el);
-      await downloadAll(els, carousel.title);
+      await downloadAll(slideEls(), carousel.title);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDownloadImages = async () => {
+    setExporting(true);
+    try {
+      await downloadAllImages(slideEls(), carousel.title);
     } finally {
       setExporting(false);
     }
@@ -170,6 +186,14 @@ export default function App() {
               className="rounded-lg px-3 py-2 text-xs font-medium text-neutral-500 hover:bg-neutral-100"
             >
               נקה הכל
+            </button>
+            <button
+              type="button"
+              disabled={exporting}
+              onClick={handleDownloadImages}
+              className="rounded-lg border border-[#E1306C] px-4 py-2 text-sm font-semibold text-[#E1306C] transition hover:bg-[#E1306C]/5 disabled:opacity-50"
+            >
+              {exporting ? 'מכין קבצים…' : 'הורדת תמונות'}
             </button>
             <button
               type="button"
@@ -223,6 +247,19 @@ export default function App() {
             </div>
             <PalettePicker value={carousel.paletteId} onChange={changePalette} />
           </div>
+          <div className="flex flex-col gap-1">
+            <label className="flex w-fit items-center gap-2 text-xs text-neutral-500">
+              יחס תמונה
+              <Segmented
+                options={RATIOS}
+                value={carousel.ratio ?? '4:5'}
+                onChange={(ratio) => setCarousel((c) => ({ ...c, ratio }))}
+              />
+            </label>
+            <p className="text-[11px] text-neutral-400">
+              4:5 גדול יותר בפיד — אבל באינסטגרם חובה לבחור יחס 4:5 בשלב החיתוך, אחרת התמונה תיחתך לריבוע.
+            </p>
+          </div>
           <label className="flex items-center gap-2 text-xs text-neutral-500">
             סגנון רקע
             <Segmented
@@ -231,6 +268,21 @@ export default function App() {
               onChange={(background) => setCarousel((c) => ({ ...c, background }))}
             />
           </label>
+          {carousel.background === 'blurred' && (
+            <label className="flex w-fit items-center gap-3 text-xs text-neutral-500">
+              גודל הכרטיס הפנימי
+              {/* The stored value is the margin around the card, so the slider is inverted: right = bigger card. */}
+              <input
+                type="range"
+                min={40}
+                max={212}
+                step={4}
+                value={260 - (carousel.cardInset ?? 84)}
+                onChange={(e) => setCarousel((c) => ({ ...c, cardInset: 260 - Number(e.target.value) }))}
+                className="w-56 accent-[#E1306C]"
+              />
+            </label>
+          )}
           {carousel.background === 'blurred' && (
             <div className="flex flex-wrap gap-2">
               {(() => {
