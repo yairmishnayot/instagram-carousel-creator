@@ -9,6 +9,7 @@ import { getVariations, variationIndex } from './variations';
 import { downloadAll, downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
 import SlideCard from './components/SlideCard';
+import SlidePreviewModal from './components/SlidePreviewModal';
 import Segmented from './components/Segmented';
 
 const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
@@ -49,6 +50,7 @@ function fileToLogo(file: File): Promise<string> {
 export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
   const [exporting, setExporting] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
   const nodes = useRef(new Map<string, HTMLDivElement>());
   const logoInput = useRef<HTMLInputElement>(null);
 
@@ -121,6 +123,22 @@ export default function App() {
             slides: [...c.slides, { id: newSlideId(), heading: '', body: '', style: { size: 'M', align: 'right' } }],
           },
     );
+
+  const duplicateSlide = (id: string) =>
+    setCarousel((c) => {
+      if (c.slides.length >= MAX_SLIDES) return c;
+      const i = c.slides.findIndex((s) => s.id === id);
+      if (i < 0) return c;
+      const src = c.slides[i];
+      const copy: Slide = {
+        ...src,
+        id: newSlideId(),
+        style: { ...src.style, roles: src.style.roles ? { ...src.style.roles } : undefined },
+      };
+      const slides = [...c.slides];
+      slides.splice(i + 1, 0, copy);
+      return { ...c, slides };
+    });
 
   const deleteSlide = (id: string) =>
     setCarousel((c) => (c.slides.length === 1 ? c : { ...c, slides: c.slides.filter((s) => s.id !== id) }));
@@ -409,8 +427,10 @@ export default function App() {
             onChange={(patch) => updateSlide(slide.id, patch)}
             onStyle={(patch) => updateStyle(slide.id, patch)}
             onMove={(dir) => moveSlide(slide.id, dir)}
+            onDuplicate={() => duplicateSlide(slide.id)}
             onDelete={() => deleteSlide(slide.id)}
             onDownload={() => handleDownloadOne(slide, i)}
+            onPreview={() => setPreviewId(slide.id)}
           />
         ))}
 
@@ -426,6 +446,20 @@ export default function App() {
         </button>
         </div>
       </main>
+
+      {(() => {
+        const i = carousel.slides.findIndex((s) => s.id === previewId);
+        if (i < 0) return null;
+        return (
+          <SlidePreviewModal
+            slide={carousel.slides[i]}
+            carousel={carousel}
+            index={i}
+            total={carousel.slides.length}
+            onClose={() => setPreviewId(null)}
+          />
+        );
+      })()}
     </div>
   );
 }

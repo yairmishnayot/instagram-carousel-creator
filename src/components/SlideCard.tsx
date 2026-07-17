@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Carousel, Slide, SlideStyle, Align, SizeStep } from '../types';
-import { SLIDE_W, slideHeight } from '../types';
+import { MAX_SLIDES, SLIDE_W, slideHeight } from '../types';
 import { PALETTES } from '../palettes';
 import SlideView, { effectiveDesign } from './SlideView';
 import Segmented from './Segmented';
@@ -17,8 +17,10 @@ interface Props {
   onChange: (patch: Partial<Slide>) => void;
   onStyle: (patch: Partial<SlideStyle>) => void;
   onMove: (dir: -1 | 1) => void;
+  onDuplicate: () => void;
   onDelete: () => void;
   onDownload: () => void;
+  onPreview: () => void;
 }
 
 const SIZES: { value: SizeStep; label: string }[] = [
@@ -63,6 +65,15 @@ export default function SlideCard(props: Props) {
               className="rounded-md px-2 py-1 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
             >
               ↓
+            </button>
+            <button
+              type="button"
+              title={total >= MAX_SLIDES ? `אי אפשר לשכפל — הקרוסלה מלאה (${MAX_SLIDES} שקופיות)` : 'שכפול השקופית'}
+              disabled={total >= MAX_SLIDES}
+              onClick={props.onDuplicate}
+              className="rounded-md px-2 py-1 text-xs font-medium text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
+            >
+              שכפול
             </button>
             <button
               type="button"
@@ -157,9 +168,9 @@ export default function SlideCard(props: Props) {
         </div>
       </div>
 
-      {/* Preview */}
+      {/* Preview — click opens the full-size view */}
       <div
-        className="relative shrink-0 self-center overflow-hidden rounded-xl shadow-md sm:self-start"
+        className="group relative shrink-0 self-center overflow-hidden rounded-xl shadow-md sm:self-start"
         style={{ width: SLIDE_W * SCALE, height: slideHeight(carousel.ratio) * SCALE }}
       >
         <div style={{ position: 'absolute', top: 0, left: 0, transform: `scale(${SCALE})`, transformOrigin: 'top left' }}>
@@ -172,6 +183,17 @@ export default function SlideCard(props: Props) {
             onOverflowChange={setOverflow}
           />
         </div>
+        <button
+          type="button"
+          onClick={props.onPreview}
+          title="תצוגה בגודל מלא"
+          aria-label="תצוגה בגודל מלא"
+          className="absolute inset-0 flex cursor-zoom-in items-center justify-center bg-black/0 transition hover:bg-black/20"
+        >
+          <span className="rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition group-hover:opacity-100">
+            🔍 תצוגה מלאה
+          </span>
+        </button>
       </div>
     </section>
   );
