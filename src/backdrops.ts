@@ -164,6 +164,145 @@ export const BACKDROPS: Backdrop[] = [
       };
     },
   },
+  {
+    id: 'rays',
+    name: 'קרניים',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `radial-gradient(circle at 50% 30%, #ffffff40 0%, #ffffff00 45%)`,
+          `repeating-conic-gradient(from 8deg at 50% 30%, ${c(0)} 0deg 15deg, ${c(1)} 15deg 30deg)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'waves',
+    name: 'גלים',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: `repeating-radial-gradient(140% 140% at 50% 130%, ${c(0)} 0 110px, ${c(1)} 110px 220px, ${c(2)} 220px 330px, ${c(3)} 330px 440px)`,
+      };
+    },
+  },
+  {
+    id: 'horizon',
+    name: 'אופק',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `linear-gradient(120deg, #ffffff1a 0%, #ffffff00 60%)`,
+          `linear-gradient(180deg, ${c(0)} 0 25%, ${c(1)} 25% 50%, ${c(2)} 50% 75%, ${c(3)} 75% 100%)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'columns',
+    name: 'עמודות',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `linear-gradient(200deg, #ffffff1a 0%, #ffffff00 55%)`,
+          `linear-gradient(90deg, ${c(0)} 0 25%, ${c(1)} 25% 50%, ${c(2)} 50% 75%, ${c(3)} 75% 100%)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'checker',
+    name: 'שחמט',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: `conic-gradient(${c(0)} 90deg, ${c(1)} 90deg 180deg, ${c(0)} 180deg 270deg, ${c(1)} 270deg)`,
+        backgroundSize: '270px 270px',
+      };
+    },
+  },
+  {
+    id: 'confetti',
+    name: 'קונפטי',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `radial-gradient(circle at 15% 12%, ${c(2)} 0 26px, ${c(2)}00 27px)`,
+          `radial-gradient(circle at 78% 8%, #ffffff59 0 18px, #ffffff00 19px)`,
+          `radial-gradient(circle at 92% 34%, ${c(3)} 0 22px, ${c(3)}00 23px)`,
+          `radial-gradient(circle at 6% 48%, ${c(3)}bf 0 16px, ${c(3)}00 17px)`,
+          `radial-gradient(circle at 88% 66%, #ffffff4d 0 14px, #ffffff00 15px)`,
+          `radial-gradient(circle at 20% 82%, ${c(2)}d9 0 24px, ${c(2)}00 25px)`,
+          `radial-gradient(circle at 64% 92%, ${c(3)} 0 18px, ${c(3)}00 19px)`,
+          `radial-gradient(circle at 44% 24%, ${c(2)}8c 0 12px, ${c(2)}00 13px)`,
+          `linear-gradient(160deg, ${c(0)} 0%, ${c(1)} 100%)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'sunrise',
+    name: 'זריחה',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `radial-gradient(circle at 50% 108%, ${c(2)} 0%, ${c(2)}cc 22%, ${c(2)}00 55%)`,
+          `linear-gradient(180deg, ${c(0)} 0%, ${c(1)} 100%)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'moon',
+    name: 'ירח',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `radial-gradient(circle at 76% 18%, #ffffff33 0 170px, #ffffff00 171px)`,
+          `radial-gradient(circle at 76% 18%, ${c(2)} 0 135px, ${c(2)}00 136px)`,
+          `linear-gradient(180deg, ${c(0)} 0%, ${c(1)} 100%)`,
+        ].join(', '),
+      };
+    },
+  },
+  {
+    id: 'zigzag',
+    name: 'זיגזג',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `linear-gradient(135deg, ${c(2)}59 25%, #ffffff00 25%)`,
+          `linear-gradient(225deg, ${c(2)}59 25%, #ffffff00 25%)`,
+          `linear-gradient(45deg, ${c(2)}59 25%, #ffffff00 25%)`,
+          `linear-gradient(315deg, ${c(2)}59 25%, #ffffff00 25%)`,
+          `linear-gradient(160deg, ${c(0)} 0%, ${c(1)} 100%)`,
+        ].join(', '),
+        backgroundPosition: '90px 0, 90px 0, 0 0, 0 0, 0 0',
+        backgroundSize: '180px 180px, 180px 180px, 180px 180px, 180px 180px, 100% 100%',
+      };
+    },
+  },
+  {
+    id: 'grid',
+    name: 'רשת',
+    style: (palette, roles, seed) => {
+      const c = others(palette, roles, seed);
+      return {
+        backgroundImage: [
+          `repeating-linear-gradient(0deg, #ffffff26 0 3px, #ffffff00 3px 90px)`,
+          `repeating-linear-gradient(90deg, #ffffff26 0 3px, #ffffff00 3px 90px)`,
+          `linear-gradient(135deg, ${c(0)} 0%, ${c(1)} 100%)`,
+        ].join(', '),
+      };
+    },
+  },
 ];
 
 export function getBackdrop(id: string | undefined): Backdrop {

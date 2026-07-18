@@ -69,6 +69,66 @@ export const PALETTES: Palette[] = [
     colors: ['#355070', '#6d597a', '#b56576', '#e56b6f', '#eaac8b'],
     defaultRoles: { bg: 0, text: 4, accent: 3 },
   },
+  {
+    id: 'wine',
+    name: 'יין',
+    colors: ['#780000', '#c1121f', '#fdf0d5', '#003049', '#669bbc'],
+    defaultRoles: { bg: 0, text: 2, accent: 4 },
+  },
+  {
+    id: 'peach',
+    name: 'אפרסק',
+    colors: ['#ffcdb2', '#ffb4a2', '#e5989b', '#b5838d', '#6d6875'],
+    defaultRoles: { bg: 0, text: 4, accent: 3 },
+  },
+  {
+    id: 'pink',
+    name: 'ורוד',
+    colors: ['#ffe5ec', '#ffc2d1', '#ffb3c6', '#ff8fab', '#fb6f92'],
+    defaultRoles: { bg: 4, text: 0, accent: 1 },
+  },
+  {
+    id: 'sage',
+    name: 'מרווה',
+    colors: ['#dad7cd', '#a3b18a', '#588157', '#3a5a40', '#344e41'],
+    defaultRoles: { bg: 4, text: 0, accent: 1 },
+  },
+  {
+    id: 'autumn',
+    name: 'סתיו',
+    colors: ['#6f1d1b', '#bb9457', '#432818', '#99582a', '#ffe6a7'],
+    defaultRoles: { bg: 2, text: 4, accent: 1 },
+  },
+  {
+    id: 'raspberry',
+    name: 'פטל',
+    colors: ['#880d1e', '#dd2d4a', '#f26a8d', '#f49cbb', '#cbeef3'],
+    defaultRoles: { bg: 0, text: 4, accent: 2 },
+  },
+  {
+    id: 'disco',
+    name: 'דיסקו',
+    colors: ['#390099', '#9e0059', '#ff0054', '#ff5400', '#ffbd00'],
+    defaultRoles: { bg: 0, text: 4, accent: 2 },
+  },
+  {
+    id: 'candy',
+    name: 'ממתקים',
+    colors: ['#9b5de5', '#f15bb5', '#fee440', '#00bbf9', '#00f5d4'],
+    defaultRoles: { bg: 0, text: 2, accent: 4 },
+  },
+  {
+    id: 'black-gold',
+    name: 'שחור וזהב',
+    colors: ['#000000', '#14213d', '#fca311', '#e5e5e5', '#ffffff'],
+    defaultRoles: { bg: 0, text: 4, accent: 2 },
+  },
+  {
+    id: 'golden-summer',
+    name: 'קיץ זהוב',
+    colors: ['#0d3b66', '#faf0ca', '#f4d35e', '#ee964b', '#f95738'],
+    defaultRoles: { bg: 0, text: 1, accent: 2 },
+  },
 ];
 
 export function getPalette(id: string): Palette {

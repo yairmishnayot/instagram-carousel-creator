@@ -3,7 +3,7 @@ import type { BackgroundStyle, Carousel, Ratio, Slide, SlideStyle } from './type
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
 import { getPalette } from './palettes';
-import { BACKDROPS } from './backdrops';
+import { BACKDROPS, getBackdrop } from './backdrops';
 import { FONTS } from './fonts';
 import { getVariations, variationIndex } from './variations';
 import { downloadAll, downloadAllImages, downloadSlide } from './export';
@@ -25,6 +25,28 @@ const RATIOS: { value: Ratio; label: string }[] = [
 // Downscale the uploaded logo so the data URL stays small enough for the
 // localStorage draft; PNG keeps transparency.
 const LOGO_MAX_PX = 800;
+
+/** Miniature of a Backdrop rendered at slide proportions. */
+function BackdropThumb({ backdrop, carousel }: { backdrop: (typeof BACKDROPS)[number]; carousel: Carousel }) {
+  const palette = getPalette(carousel.paletteId);
+  const roles = carousel.roles ?? palette.defaultRoles;
+  return (
+    <span className="relative block h-20 w-16 overflow-hidden rounded-md border border-black/10">
+      <span
+        className="absolute"
+        style={{
+          top: 0,
+          left: 0,
+          width: SLIDE_W,
+          height: SLIDE_H,
+          transform: `scale(${64 / SLIDE_W})`,
+          transformOrigin: 'top left',
+          ...backdrop.style(palette, roles, 0),
+        }}
+      />
+    </span>
+  );
+}
 
 function fileToLogo(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -51,6 +73,8 @@ export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
   const [exporting, setExporting] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [palettesOpen, setPalettesOpen] = useState(true);
+  const [backdropsOpen, setBackdropsOpen] = useState(true);
   const nodes = useRef(new Map<string, HTMLDivElement>());
   const logoInput = useRef<HTMLInputElement>(null);
 
@@ -251,7 +275,17 @@ export default function App() {
           />
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-xs font-medium text-neutral-500">פלטת צבעים</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-medium text-neutral-500">פלטת צבעים</p>
+                <button
+                  type="button"
+                  onClick={() => setPalettesOpen((o) => !o)}
+                  aria-expanded={palettesOpen}
+                  className="rounded-md px-2 py-1 text-[11px] font-medium text-neutral-500 transition hover:bg-neutral-100 hover:text-[#E1306C]"
+                >
+                  {palettesOpen ? 'מזעור ▲' : 'הרחבה ▼'}
+                </button>
+              </div>
               {(() => {
                 const palette = getPalette(carousel.paletteId);
                 const variations = getVariations(palette);
@@ -279,7 +313,24 @@ export default function App() {
                 );
               })()}
             </div>
-            <PalettePicker value={carousel.paletteId} onChange={changePalette} />
+            {palettesOpen ? (
+              <PalettePicker value={carousel.paletteId} onChange={changePalette} />
+            ) : (
+              // Collapsed: compact view of the selected palette; click expands the full list.
+              <button
+                type="button"
+                onClick={() => setPalettesOpen(true)}
+                title="הרחבת רשימת הפלטות"
+                className="flex w-full items-center gap-2 rounded-xl border border-neutral-200 p-1.5 text-right transition hover:border-[#E1306C]"
+              >
+                <span className="flex h-6 w-24 shrink-0 overflow-hidden rounded-md" aria-hidden>
+                  {getPalette(carousel.paletteId).colors.map((c) => (
+                    <span key={c} className="h-full flex-1" style={{ background: c }} />
+                  ))}
+                </span>
+                <span className="text-xs font-medium text-neutral-700">{getPalette(carousel.paletteId).name}</span>
+              </button>
+            )}
           </div>
           <div>
             <p className="mb-2 text-xs font-medium text-neutral-500">פונט</p>
@@ -340,38 +391,49 @@ export default function App() {
             </label>
           )}
           {carousel.background === 'blurred' && (
-            <div className="flex flex-wrap gap-2">
-              {(() => {
-                const palette = getPalette(carousel.paletteId);
-                const roles = carousel.roles ?? palette.defaultRoles;
-                const selectedId = carousel.backdropId ?? BACKDROPS[0].id;
-                return BACKDROPS.map((b) => (
-                  <button
-                    key={b.id}
-                    type="button"
-                    onClick={() => setCarousel((c) => ({ ...c, backdropId: b.id }))}
-                    className={`flex flex-col items-center gap-1 rounded-lg p-1.5 transition ${
-                      b.id === selectedId ? 'bg-neutral-100 ring-2 ring-[#E1306C]' : 'hover:bg-neutral-50'
-                    }`}
-                  >
-                    <span className="relative block h-20 w-16 overflow-hidden rounded-md border border-black/10">
-                      <span
-                        className="absolute"
-                        style={{
-                          top: 0,
-                          left: 0,
-                          width: SLIDE_W,
-                          height: SLIDE_H,
-                          transform: `scale(${64 / SLIDE_W})`,
-                          transformOrigin: 'top left',
-                          ...b.style(palette, roles, 0),
-                        }}
-                      />
-                    </span>
-                    <span className="text-[11px] font-medium text-neutral-600">{b.name}</span>
-                  </button>
-                ));
-              })()}
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <p className="text-xs font-medium text-neutral-500">סוג הרקע</p>
+                <button
+                  type="button"
+                  onClick={() => setBackdropsOpen((o) => !o)}
+                  aria-expanded={backdropsOpen}
+                  className="rounded-md px-2 py-1 text-[11px] font-medium text-neutral-500 transition hover:bg-neutral-100 hover:text-[#E1306C]"
+                >
+                  {backdropsOpen ? 'מזעור ▲' : 'הרחבה ▼'}
+                </button>
+              </div>
+              {backdropsOpen ? (
+                <div className="flex flex-wrap gap-2">
+                  {(() => {
+                    const selectedId = carousel.backdropId ?? BACKDROPS[0].id;
+                    return BACKDROPS.map((b) => (
+                      <button
+                        key={b.id}
+                        type="button"
+                        onClick={() => setCarousel((c) => ({ ...c, backdropId: b.id }))}
+                        className={`flex flex-col items-center gap-1 rounded-lg p-1.5 transition ${
+                          b.id === selectedId ? 'bg-neutral-100 ring-2 ring-[#E1306C]' : 'hover:bg-neutral-50'
+                        }`}
+                      >
+                        <BackdropThumb backdrop={b} carousel={carousel} />
+                        <span className="text-[11px] font-medium text-neutral-600">{b.name}</span>
+                      </button>
+                    ));
+                  })()}
+                </div>
+              ) : (
+                // Collapsed: compact view of the selected backdrop; click expands the full list.
+                <button
+                  type="button"
+                  onClick={() => setBackdropsOpen(true)}
+                  title="הרחבת רשימת סוגי הרקע"
+                  className="flex w-full items-center gap-2 rounded-xl border border-neutral-200 p-1.5 text-right transition hover:border-[#E1306C]"
+                >
+                  <BackdropThumb backdrop={getBackdrop(carousel.backdropId)} carousel={carousel} />
+                  <span className="text-xs font-medium text-neutral-700">{getBackdrop(carousel.backdropId).name}</span>
+                </button>
+              )}
             </div>
           )}
           <div className="flex items-center gap-3">
