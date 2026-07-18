@@ -124,6 +124,21 @@ export default function App() {
           },
     );
 
+  // Copies one slide's design (palette, colors, size, align) onto every other slide.
+  const applyStyleToAll = (id: string) =>
+    setCarousel((c) => {
+      const src = c.slides.find((s) => s.id === id);
+      if (!src) return c;
+      return {
+        ...c,
+        slides: c.slides.map((s) =>
+          s.id === id
+            ? s
+            : { ...s, style: { ...src.style, roles: src.style.roles ? { ...src.style.roles } : undefined } },
+        ),
+      };
+    });
+
   const duplicateSlide = (id: string) =>
     setCarousel((c) => {
       if (c.slides.length >= MAX_SLIDES) return c;
@@ -428,6 +443,7 @@ export default function App() {
             onStyle={(patch) => updateStyle(slide.id, patch)}
             onMove={(dir) => moveSlide(slide.id, dir)}
             onDuplicate={() => duplicateSlide(slide.id)}
+            onApplyStyleToAll={() => applyStyleToAll(slide.id)}
             onDelete={() => deleteSlide(slide.id)}
             onDownload={() => handleDownloadOne(slide, i)}
             onPreview={() => setPreviewId(slide.id)}

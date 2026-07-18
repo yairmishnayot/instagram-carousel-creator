@@ -18,6 +18,7 @@ interface Props {
   onStyle: (patch: Partial<SlideStyle>) => void;
   onMove: (dir: -1 | 1) => void;
   onDuplicate: () => void;
+  onApplyStyleToAll: () => void;
   onDelete: () => void;
   onDownload: () => void;
   onPreview: () => void;
@@ -149,6 +150,17 @@ export default function SlideCard(props: Props) {
             </div>
           ))}
         </div>
+
+        {total > 1 && (
+          <button
+            type="button"
+            onClick={props.onApplyStyleToAll}
+            title="מעתיק את הפלטה, הצבעים, גודל הטקסט והיישור של השקופית הזו לכל שאר השקופיות"
+            className="w-fit rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 transition hover:border-[#E1306C] hover:text-[#E1306C]"
+          >
+            החלת העיצוב על כל השקופיות
+          </button>
+        )}
 
         {overflow && (
           <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
