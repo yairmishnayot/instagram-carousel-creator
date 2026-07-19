@@ -1,7 +1,8 @@
-import { useLayoutEffect, useRef } from 'react';
-import type { Carousel, Slide, SizeStep } from '../types';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { Carousel, LogoStyle, Slide, SizeStep } from '../types';
 import { SLIDE_W, slideHeight } from '../types';
-import { getPalette, type Palette } from '../palettes';
+import { makeCutout } from '../cutout';
+import { getPalette, roleColor, type Palette } from '../palettes';
 import { getBackdrop } from '../backdrops';
 import { getFont } from '../fonts';
 import type { Roles } from '../types';
@@ -30,11 +31,25 @@ interface Props {
 export default function SlideView({ slide, carousel, index, total, captureRef, onOverflowChange }: Props) {
   const contentRef = useRef<HTMLDivElement>(null);
   const { palette, roles } = effectiveDesign(slide, carousel);
-  const [bg, text, accent] = [palette.colors[roles.bg], palette.colors[roles.text], palette.colors[roles.accent]];
+  const [bg, text, accent] = [roleColor(palette, roles.bg), roleColor(palette, roles.text), roleColor(palette, roles.accent)];
   const mult = SIZE_MULT[slide.style.size];
   const blurred = carousel.background === 'blurred';
   const cardInset = carousel.cardInset ?? 84;
   const font = getFont(carousel.fontId);
+  // Drafts saved before a style was removed may hold an unknown value; treat it as 'circle'.
+  const logoStyle: LogoStyle = carousel.logoStyle === 'cutout' ? 'cutout' : 'circle';
+
+  const [cutout, setCutout] = useState<string>();
+  useEffect(() => {
+    if (!carousel.logo || logoStyle !== 'cutout') return;
+    let alive = true;
+    makeCutout(carousel.logo).then((c) => {
+      if (alive) setCutout(c);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [carousel.logo, logoStyle]);
 
   useLayoutEffect(() => {
     const el = contentRef.current;
@@ -79,7 +94,13 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
           position: 'absolute',
           inset: blurred ? cardInset + 80 : 96,
           // Reserve room at the bottom so text never overlaps the logo.
-          bottom: carousel.logo ? (blurred ? cardInset + 150 : 240) : undefined,
+          bottom: carousel.logo
+            ? logoStyle === 'cutout'
+              ? (blurred ? cardInset : 0) + 260
+              : blurred
+                ? cardInset + 150
+                : 240
+            : undefined,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -119,7 +140,24 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
           </p>
         )}
       </div>
-      {carousel.logo && (
+      {carousel.logo && logoStyle === 'cutout' && cutout && (
+        <img
+          src={cutout}
+          alt=""
+          style={{
+            position: 'absolute',
+            // Inside the content rectangle, centered at its bottom.
+            bottom: blurred ? cardInset + 36 : 48,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            maxWidth: 420,
+            maxHeight: 180,
+            objectFit: 'contain',
+            filter: 'drop-shadow(0 10px 28px rgba(0, 0, 0, 0.25))',
+          }}
+        />
+      )}
+      {carousel.logo && logoStyle === 'circle' && (
         <img
           src={carousel.logo}
           alt=""

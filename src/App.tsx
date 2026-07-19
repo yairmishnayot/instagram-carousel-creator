@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import type { BackgroundStyle, Carousel, Ratio, Slide, SlideStyle } from './types';
+import type { BackgroundStyle, Carousel, LogoStyle, Ratio, Slide, SlideStyle } from './types';
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
-import { getPalette } from './palettes';
+import { getPalette, roleColor } from './palettes';
 import { BACKDROPS, getBackdrop } from './backdrops';
 import { FONTS } from './fonts';
 import { getVariations, variationIndex } from './variations';
@@ -15,6 +15,11 @@ import Segmented from './components/Segmented';
 const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
   { value: 'solid', label: 'צבע אחיד' },
   { value: 'blurred', label: 'רקע מטושטש' },
+];
+
+const LOGO_STYLES: { value: LogoStyle; label: string }[] = [
+  { value: 'circle', label: 'עיגול' },
+  { value: 'cutout', label: 'אייקון ללא רקע' },
 ];
 
 const RATIOS: { value: Ratio; label: string }[] = [
@@ -303,7 +308,7 @@ export default function App() {
                         <span
                           key={role}
                           className="-me-1.5 h-4 w-4 rounded-full border border-white last:me-0"
-                          style={{ background: palette.colors[roles[role]] }}
+                          style={{ background: roleColor(palette, roles[role]) }}
                         />
                       ))}
                     </span>
@@ -480,6 +485,16 @@ export default function App() {
               </button>
             )}
           </div>
+          {carousel.logo && (
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-medium text-neutral-500">מיקום הלוגו</span>
+              <Segmented
+                options={LOGO_STYLES}
+                value={carousel.logoStyle ?? 'circle'}
+                onChange={(logoStyle) => setCarousel((c) => ({ ...c, logoStyle }))}
+              />
+            </div>
+          )}
           <label className="flex w-fit cursor-pointer items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"

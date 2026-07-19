@@ -134,3 +134,11 @@ export const PALETTES: Palette[] = [
 export function getPalette(id: string): Palette {
   return PALETTES.find((p) => p.id === id) ?? PALETTES[0];
 }
+
+/** Extra role colors available on every palette: index 5 = black, 6 = white. */
+export const EXTRA_COLORS = ['#000000', '#ffffff'];
+
+/** Resolves a Color Role index to a color: 0-4 = the palette's colors, 5-6 = black/white. */
+export function roleColor(palette: Palette, index: number): string {
+  return palette.colors[index] ?? EXTRA_COLORS[index - palette.colors.length] ?? palette.colors[0];
+}

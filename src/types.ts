@@ -2,6 +2,11 @@ export type Align = 'right' | 'center';
 export type SizeStep = 'S' | 'M' | 'L';
 export type BackgroundStyle = 'solid' | 'blurred';
 export type Ratio = '4:5' | '1:1';
+/**
+ * 'circle' = small circle at the bottom middle; 'cutout' = the image's
+ * background removed, leaving only the icon at the bottom middle.
+ */
+export type LogoStyle = 'circle' | 'cutout';
 
 /** Indices into a Palette's 5 colors, per Color Role. */
 export interface Roles {
@@ -37,6 +42,8 @@ export interface Carousel {
   backdropId?: string;
   /** Optional logo (data URL) shown at the bottom of every slide. */
   logo?: string;
+  /** How the logo is placed on the slide; undefined = 'circle'. */
+  logoStyle?: LogoStyle;
   /** Margin (px) between the slide edge and the content card in 'blurred' mode; undefined = 84. */
   cardInset?: number;
   /** Export aspect ratio; undefined = '4:5' (1080x1350). '1:1' posts to Instagram without cropping. */

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Carousel, Slide, SlideStyle, Align, SizeStep } from '../types';
 import { MAX_SLIDES, SLIDE_W, slideHeight } from '../types';
-import { PALETTES } from '../palettes';
+import { EXTRA_COLORS, PALETTES } from '../palettes';
 import SlideView, { effectiveDesign } from './SlideView';
 import Segmented from './Segmented';
 
@@ -132,16 +132,16 @@ export default function SlideCard(props: Props) {
             <div key={role} className="flex items-center gap-2">
               <span className="w-11 text-xs text-neutral-500">{ROLE_LABELS[role]}</span>
               <div className="flex gap-1.5">
-                {palette.colors.map((c, i) => (
+                {[...palette.colors, ...EXTRA_COLORS].map((c, i) => (
                   <button
-                    key={c}
+                    key={i}
                     type="button"
                     title={c}
                     onClick={() => props.onStyle({ roles: { ...roles, [role]: i } })}
                     className={`h-5 w-5 rounded-full border transition ${
                       roles[role] === i
                         ? 'scale-110 border-neutral-800 ring-2 ring-neutral-300'
-                        : 'border-black/10 hover:scale-110'
+                        : `${c === '#ffffff' ? 'border-black/30' : 'border-black/10'} hover:scale-110`
                     }`}
                     style={{ background: c }}
                   />
