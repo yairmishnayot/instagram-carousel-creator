@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import type { BackgroundStyle, Carousel, LogoStyle, Ratio, Slide, SlideStyle } from './types';
+import type { BackgroundStyle, Carousel, DesignSnapshot, FavoriteDesign, LogoStyle, Ratio, Slide, SlideStyle } from './types';
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
+import { loadFavorites, saveFavorites, newFavoriteId, sameDesign } from './favorites';
 import { getPalette, roleColor } from './palettes';
 import { BACKDROPS, getBackdrop } from './backdrops';
 import { FONTS } from './fonts';
@@ -10,7 +11,16 @@ import { downloadAll, downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
 import SlideCard from './components/SlideCard';
 import SlidePreviewModal from './components/SlidePreviewModal';
+import FavoritesPanel from './components/FavoritesPanel';
 import Segmented from './components/Segmented';
+import { effectiveDesign } from './components/SlideView';
+
+type SidebarTab = 'design' | 'favorites';
+
+const SIDEBAR_TABS: { value: SidebarTab; label: string }[] = [
+  { value: 'design', label: 'עיצוב' },
+  { value: 'favorites', label: 'מועדפים' },
+];
 
 const BACKGROUNDS: { value: BackgroundStyle; label: string }[] = [
   { value: 'solid', label: 'צבע אחיד' },
@@ -76,6 +86,8 @@ function fileToLogo(file: File): Promise<string> {
 
 export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
+  const [favorites, setFavorites] = useState<FavoriteDesign[]>(loadFavorites);
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('design');
   const [exporting, setExporting] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [palettesOpen, setPalettesOpen] = useState(true);
@@ -97,6 +109,61 @@ export default function App() {
     const t = setTimeout(() => saveDraft(carousel), 300);
     return () => clearTimeout(t);
   }, [carousel]);
+
+  useEffect(() => saveFavorites(favorites), [favorites]);
+
+  // The design a slide currently renders with, fully resolved (no inherited fields) — what gets
+  // saved to Favorites. Includes carousel-wide settings, since they're part of the visible look too.
+  const designOf = (slide: Slide): DesignSnapshot => {
+    const { palette, roles } = effectiveDesign(slide, carousel);
+    return {
+      paletteId: palette.id,
+      roles,
+      size: slide.style.size,
+      align: slide.style.align,
+      background: carousel.background,
+      backdropId: carousel.backdropId ?? BACKDROPS[0].id,
+      cardInset: carousel.cardInset ?? 84,
+      fontId: carousel.fontId ?? FONTS[0].id,
+      logo: carousel.logo,
+      logoStyle: carousel.logoStyle === 'cutout' ? 'cutout' : 'circle',
+      ratio: carousel.ratio ?? '4:5',
+      showBadge: carousel.showBadge,
+    };
+  };
+
+  const isFavorited = (slide: Slide) => favorites.some((f) => sameDesign(f, designOf(slide)));
+
+  // Saves the slide's current design as a favorite; a duplicate design is a no-op since
+  // favorites can only be removed from the favorites tab, not by re-clicking the star.
+  const favoriteSlide = (slide: Slide) => {
+    const design = designOf(slide);
+    if (favorites.some((f) => sameDesign(f, design))) return;
+    setFavorites((f) => [...f, { ...design, id: newFavoriteId() }]);
+  };
+
+  const removeFavorite = (id: string) => setFavorites((f) => f.filter((fav) => fav.id !== id));
+
+  const applyFavoriteToAll = (favoriteId: string) =>
+    setCarousel((c) => {
+      const fav = favorites.find((f) => f.id === favoriteId);
+      if (!fav) return c;
+      return {
+        ...c,
+        background: fav.background,
+        backdropId: fav.backdropId,
+        cardInset: fav.cardInset,
+        fontId: fav.fontId,
+        logo: fav.logo,
+        logoStyle: fav.logoStyle,
+        ratio: fav.ratio,
+        showBadge: fav.showBadge,
+        slides: c.slides.map((s) => ({
+          ...s,
+          style: { ...s.style, paletteId: fav.paletteId, roles: { ...fav.roles }, size: fav.size, align: fav.align },
+        })),
+      };
+    });
 
   const registerNode = (id: string, el: HTMLDivElement | null) => {
     if (el) nodes.current.set(id, el);
@@ -278,6 +345,21 @@ export default function App() {
             placeholder="כותרת הקרוסלה (שם הקבצים בהורדה)"
             className="border-b-2 border-neutral-200 pb-2 text-xl font-bold outline-none placeholder:font-normal placeholder:text-neutral-400 focus:border-[#E1306C]"
           />
+
+          <div className="flex">
+            <Segmented
+              options={SIDEBAR_TABS.map((t) =>
+                t.value === 'favorites' && favorites.length > 0 ? { ...t, label: `${t.label} (${favorites.length})` } : t,
+              )}
+              value={sidebarTab}
+              onChange={setSidebarTab}
+            />
+          </div>
+
+          {sidebarTab === 'favorites' ? (
+            <FavoritesPanel favorites={favorites} onApply={applyFavoriteToAll} onRemove={removeFavorite} />
+          ) : (
+          <>
           <div>
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -300,7 +382,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={cycleVariation}
-                    title="החלפת שילוב הצבעים בין רקע, טקסט והדגשה"
+                    title="החלפת שילוב הצבעים בין רקע, טקסט וכותרת"
                     className="flex items-center gap-2 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 transition hover:border-[#E1306C] hover:text-[#E1306C]"
                   >
                     <span className="flex" aria-hidden>
@@ -504,6 +586,8 @@ export default function App() {
             />
             הצגת מספור שקופיות על התמונות
           </label>
+          </>
+          )}
         </aside>
 
         <div className="flex w-full min-w-0 flex-1 flex-col gap-5">
@@ -524,6 +608,8 @@ export default function App() {
             onDelete={() => deleteSlide(slide.id)}
             onDownload={() => handleDownloadOne(slide, i)}
             onPreview={() => setPreviewId(slide.id)}
+            favorited={isFavorited(slide)}
+            onFavorite={() => favoriteSlide(slide)}
           />
         ))}
 

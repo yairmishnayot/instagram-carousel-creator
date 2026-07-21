@@ -31,6 +31,31 @@ export interface Slide {
   style: SlideStyle;
 }
 
+/**
+ * A fully-resolved design (no inherited/undefined fields), as saved to Favorites: the slide's
+ * own style plus every carousel-wide visual setting (background, backdrop, font, logo, ratio, badge).
+ * Carousel-wide fields aren't per-slide, so applying a favorite to one slide also applies them
+ * to the whole carousel.
+ */
+export interface DesignSnapshot {
+  paletteId: string;
+  roles: Roles;
+  size: SizeStep;
+  align: Align;
+  background: BackgroundStyle;
+  backdropId: string;
+  cardInset: number;
+  fontId: string;
+  logo?: string;
+  logoStyle: LogoStyle;
+  ratio: Ratio;
+  showBadge: boolean;
+}
+
+export interface FavoriteDesign extends DesignSnapshot {
+  id: string;
+}
+
 export interface Carousel {
   title: string;
   paletteId: string;

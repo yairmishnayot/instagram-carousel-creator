@@ -22,6 +22,8 @@ interface Props {
   onDelete: () => void;
   onDownload: () => void;
   onPreview: () => void;
+  favorited: boolean;
+  onFavorite: () => void;
 }
 
 const SIZES: { value: SizeStep; label: string }[] = [
@@ -35,10 +37,10 @@ const ALIGNS: { value: Align; label: string }[] = [
   { value: 'center', label: 'מרכז' },
 ];
 
-const ROLE_LABELS = { bg: 'רקע', text: 'טקסט', accent: 'הדגשה' } as const;
+const ROLE_LABELS = { bg: 'רקע', text: 'טקסט', accent: 'כותרת' } as const;
 
 export default function SlideCard(props: Props) {
-  const { slide, carousel, index, total, exporting } = props;
+  const { slide, carousel, index, total, exporting, favorited } = props;
   const [overflow, setOverflow] = useState(false);
   const { palette, roles } = effectiveDesign(slide, carousel);
 
@@ -49,6 +51,21 @@ export default function SlideCard(props: Props) {
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-bold text-neutral-500">שקופית {index + 1}</h3>
           <div className="flex items-center gap-1">
+            <button
+              type="button"
+              title={
+                favorited
+                  ? 'העיצוב הזה כבר במועדפים'
+                  : 'שמירת העיצוב המלא (פלטה, רקע, פונט, לוגו) של השקופית והקרוסלה במועדפים'
+              }
+              aria-pressed={favorited}
+              onClick={props.onFavorite}
+              className={`rounded-md px-2 py-1 text-base leading-none transition ${
+                favorited ? 'text-[#E1306C]' : 'text-neutral-300 hover:text-[#E1306C]'
+              }`}
+            >
+              {favorited ? '★' : '☆'}
+            </button>
             <button
               type="button"
               title="הזז למעלה"
