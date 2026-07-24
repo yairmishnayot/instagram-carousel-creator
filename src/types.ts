@@ -24,10 +24,35 @@ export interface SlideStyle {
   align: Align;
 }
 
+/** Per-word/phrase visual override applied on top of the slide's normal body style. */
+export interface TextSpanStyle {
+  /** Color override; undefined = inherit the slide's text color. */
+  color?: string;
+  /** Font override (a Font id from fonts.ts); undefined = inherit the carousel font. */
+  fontId?: string;
+  /** Size as % of the normal body size; undefined = 100. */
+  sizePct?: number;
+  bold?: boolean;
+}
+
+/**
+ * A styled run of text within a Slide's body. Matched by content rather than by
+ * character offset — `occurrence` picks the Nth (0-based) time `text` appears in the
+ * body — so the style survives edits elsewhere in the body without drifting.
+ */
+export interface StyledRange {
+  id: string;
+  text: string;
+  occurrence: number;
+  style: TextSpanStyle;
+}
+
 export interface Slide {
   id: string;
   heading: string;
   body: string;
+  /** Styled words/phrases within `body`; undefined/empty = no overrides. */
+  bodyStyles?: StyledRange[];
   style: SlideStyle;
 }
 

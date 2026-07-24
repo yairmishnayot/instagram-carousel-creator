@@ -6,6 +6,7 @@ import { getPalette, roleColor, type Palette } from '../palettes';
 import { getBackdrop } from '../backdrops';
 import { getFont } from '../fonts';
 import type { Roles } from '../types';
+import { segmentText } from '../richText';
 
 const SIZE_MULT: Record<SizeStep, number> = { S: 0.85, M: 1, L: 1.18 };
 const MIN_SHRINK = 0.55;
@@ -136,7 +137,25 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
               overflowWrap: 'break-word',
             }}
           >
-            {slide.body}
+            {segmentText(slide.body, slide.bodyStyles).map((seg, i) =>
+              seg.style ? (
+                <span
+                  key={i}
+                  style={{
+                    color: seg.style.color ?? text,
+                    fontFamily: seg.style.fontId ? getFont(seg.style.fontId).family : undefined,
+                    fontWeight: seg.style.bold ? 700 : undefined,
+                    fontSize: seg.style.sizePct
+                      ? `calc(${(54 * mult * seg.style.sizePct) / 100}px * var(--shrink, 1))`
+                      : undefined,
+                  }}
+                >
+                  {seg.text}
+                </span>
+              ) : (
+                <span key={i}>{seg.text}</span>
+              ),
+            )}
           </p>
         )}
       </div>

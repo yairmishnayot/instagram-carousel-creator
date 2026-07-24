@@ -4,6 +4,7 @@ import { MAX_SLIDES, SLIDE_W, slideHeight } from '../types';
 import { EXTRA_COLORS, PALETTES } from '../palettes';
 import SlideView, { effectiveDesign } from './SlideView';
 import Segmented from './Segmented';
+import StyledTextEditor from './StyledTextEditor';
 
 const SCALE = 0.26;
 
@@ -110,12 +111,12 @@ export default function SlideCard(props: Props) {
           placeholder="כותרת (אופציונלי)"
           className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold outline-none focus:border-[#E1306C]"
         />
-        <textarea
-          value={slide.body}
-          onChange={(e) => props.onChange({ body: e.target.value })}
-          placeholder="תוכן השקופית…"
-          rows={5}
-          className="resize-y rounded-lg border border-neutral-200 px-3 py-2 text-sm leading-relaxed outline-none focus:border-[#E1306C]"
+        <StyledTextEditor
+          body={slide.body}
+          styles={slide.bodyStyles}
+          palette={palette}
+          onChangeBody={(body) => props.onChange({ body })}
+          onChangeStyles={(bodyStyles) => props.onChange({ bodyStyles })}
         />
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
