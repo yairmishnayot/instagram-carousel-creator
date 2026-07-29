@@ -50,6 +50,8 @@ export interface StyledRange {
 export interface Slide {
   id: string;
   heading: string;
+  /** Styled words/phrases within `heading`; undefined/empty = no overrides. */
+  headingStyles?: StyledRange[];
   body: string;
   /** Styled words/phrases within `body`; undefined/empty = no overrides. */
   bodyStyles?: StyledRange[];

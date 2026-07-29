@@ -122,7 +122,25 @@ export default function SlideView({ slide, carousel, index, total, captureRef, o
               overflowWrap: 'break-word',
             }}
           >
-            {slide.heading}
+            {segmentText(slide.heading, slide.headingStyles).map((seg, i) =>
+              seg.style ? (
+                <span
+                  key={i}
+                  style={{
+                    color: seg.style.color ?? accent,
+                    fontFamily: seg.style.fontId ? getFont(seg.style.fontId).family : undefined,
+                    fontWeight: seg.style.bold ? 700 : undefined,
+                    fontSize: seg.style.sizePct
+                      ? `calc(${(84 * mult * seg.style.sizePct) / 100}px * var(--shrink, 1))`
+                      : undefined,
+                  }}
+                >
+                  {seg.text}
+                </span>
+              ) : (
+                <span key={i}>{seg.text}</span>
+              ),
+            )}
           </h2>
         )}
         {slide.body && (

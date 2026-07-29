@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 import type { StyledRange, TextSpanStyle } from '../types';
 import { findOccurrenceStart, occurrenceIndexAt } from '../richText';
 import { EXTRA_COLORS, type Palette } from '../palettes';
@@ -12,6 +12,10 @@ interface Props {
   palette: Palette;
   onChangeBody: (body: string) => void;
   onChangeStyles: (styles: StyledRange[]) => void;
+  placeholder: string;
+  /** Single-line <input> instead of the default multi-line <textarea>; e.g. for a slide heading. */
+  multiline?: boolean;
+  inputClassName?: string;
 }
 
 interface Draft {
@@ -23,8 +27,17 @@ interface Draft {
   style: TextSpanStyle;
 }
 
-export default function StyledTextEditor({ body, styles, palette, onChangeBody, onChangeStyles }: Props) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export default function StyledTextEditor({
+  body,
+  styles,
+  palette,
+  onChangeBody,
+  onChangeStyles,
+  placeholder,
+  multiline = true,
+  inputClassName,
+}: Props) {
+  const textareaRef = useRef<HTMLTextAreaElement | HTMLInputElement>(null);
   // `draft` holds the panel's content and stays mounted through the closing
   // animation; `panelOpen` drives that animation and only clears `draft` once
   // the collapse transition finishes (see onTransitionEnd below).
@@ -42,8 +55,8 @@ export default function StyledTextEditor({ body, styles, palette, onChangeBody, 
   const startDraftFromSelection = () => {
     const el = textareaRef.current;
     if (!el) return;
-    const start = el.selectionStart;
-    const end = el.selectionEnd;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
     if (start === end) return;
     const text = body.slice(start, end);
     const occurrence = occurrenceIndexAt(body, start, text);
@@ -78,15 +91,32 @@ export default function StyledTextEditor({ body, styles, palette, onChangeBody, 
 
   return (
     <div className="flex flex-col gap-2">
-      <textarea
-        ref={textareaRef}
-        value={body}
-        onChange={(e) => onChangeBody(e.target.value)}
-        onSelect={startDraftFromSelection}
-        placeholder="תוכן השקופית…"
-        rows={5}
-        className="resize-y rounded-lg border border-neutral-200 px-3 py-2 text-sm leading-relaxed outline-none focus:border-[#E1306C]"
-      />
+      {multiline ? (
+        <textarea
+          ref={textareaRef as RefObject<HTMLTextAreaElement>}
+          value={body}
+          onChange={(e) => onChangeBody(e.target.value)}
+          onSelect={startDraftFromSelection}
+          placeholder={placeholder}
+          rows={5}
+          className={
+            inputClassName ??
+            'resize-y rounded-lg border border-neutral-200 px-3 py-2 text-sm leading-relaxed outline-none focus:border-[#E1306C]'
+          }
+        />
+      ) : (
+        <input
+          ref={textareaRef as RefObject<HTMLInputElement>}
+          value={body}
+          onChange={(e) => onChangeBody(e.target.value)}
+          onSelect={startDraftFromSelection}
+          placeholder={placeholder}
+          className={
+            inputClassName ??
+            'rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold outline-none focus:border-[#E1306C]'
+          }
+        />
+      )}
       <p className="text-[11px] text-neutral-400">סמנו טקסט כדי לעצב אותו (גודל, פונט, צבע).</p>
 
       {/* Grid-rows 0fr/1fr trick animates height smoothly without a fixed max-height;

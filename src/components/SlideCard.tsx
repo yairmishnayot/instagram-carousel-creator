@@ -105,11 +105,14 @@ export default function SlideCard(props: Props) {
           </div>
         </div>
 
-        <input
-          value={slide.heading}
-          onChange={(e) => props.onChange({ heading: e.target.value })}
+        <StyledTextEditor
+          body={slide.heading}
+          styles={slide.headingStyles}
+          palette={palette}
+          onChangeBody={(heading) => props.onChange({ heading })}
+          onChangeStyles={(headingStyles) => props.onChange({ headingStyles })}
           placeholder="כותרת (אופציונלי)"
-          className="rounded-lg border border-neutral-200 px-3 py-2 text-sm font-semibold outline-none focus:border-[#E1306C]"
+          multiline={false}
         />
         <StyledTextEditor
           body={slide.body}
@@ -117,6 +120,7 @@ export default function SlideCard(props: Props) {
           palette={palette}
           onChangeBody={(body) => props.onChange({ body })}
           onChangeStyles={(bodyStyles) => props.onChange({ bodyStyles })}
+          placeholder="תוכן השקופית…"
         />
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
