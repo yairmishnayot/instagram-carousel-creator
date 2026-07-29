@@ -6,7 +6,7 @@ export function safeTitle(title: string): string {
   return cleaned || 'carousel';
 }
 
-async function capture(node: HTMLElement): Promise<string> {
+export async function capture(node: HTMLElement): Promise<string> {
   await document.fonts.ready;
   return toPng(node, { width: node.offsetWidth, height: node.offsetHeight, pixelRatio: 1 });
 }

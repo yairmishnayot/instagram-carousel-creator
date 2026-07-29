@@ -2,17 +2,25 @@ import { useEffect, useRef, useState } from 'react';
 import type { BackgroundStyle, Carousel, DesignSnapshot, FavoriteDesign, LogoStyle, Ratio, Slide, SlideStyle } from './types';
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
-import { loadFavorites, saveFavorites, newFavoriteId, sameDesign } from './favorites';
-import { getPalette, roleColor } from './palettes';
+import { loadFavorites, saveFavorites, newFavoriteId, sameDesign, downloadFavorites, parseFavoritesFile } from './favorites';
+import { getPalette, getVisiblePalettes, pickNextPoolPalette, roleColor } from './palettes';
+import {
+  loadDislikedPaletteIds,
+  saveDislikedPaletteIds,
+  loadExtraPaletteIds,
+  saveExtraPaletteIds,
+} from './dislikes';
 import { BACKDROPS, getBackdrop } from './backdrops';
 import { FONTS } from './fonts';
 import { getVariations, variationIndex } from './variations';
 import { downloadAll, downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
+import DislikedPalettesPanel from './components/DislikedPalettesPanel';
 import SlideCard from './components/SlideCard';
 import SlidePreviewModal from './components/SlidePreviewModal';
 import FavoritesPanel from './components/FavoritesPanel';
 import Segmented from './components/Segmented';
+import PostToInstagramModal from './components/PostToInstagramModal';
 import { effectiveDesign } from './components/SlideView';
 
 type SidebarTab = 'design' | 'favorites';
@@ -87,9 +95,12 @@ function fileToLogo(file: File): Promise<string> {
 export default function App() {
   const [carousel, setCarousel] = useState<Carousel>(loadDraft);
   const [favorites, setFavorites] = useState<FavoriteDesign[]>(loadFavorites);
+  const [dislikedPaletteIds, setDislikedPaletteIds] = useState<string[]>(loadDislikedPaletteIds);
+  const [extraPaletteIds, setExtraPaletteIds] = useState<string[]>(loadExtraPaletteIds);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('design');
   const [exporting, setExporting] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [postOpen, setPostOpen] = useState(false);
   const [palettesOpen, setPalettesOpen] = useState(true);
   const [backdropsOpen, setBackdropsOpen] = useState(true);
   const nodes = useRef(new Map<string, HTMLDivElement>());
@@ -111,6 +122,10 @@ export default function App() {
   }, [carousel]);
 
   useEffect(() => saveFavorites(favorites), [favorites]);
+
+  useEffect(() => saveDislikedPaletteIds(dislikedPaletteIds), [dislikedPaletteIds]);
+
+  useEffect(() => saveExtraPaletteIds(extraPaletteIds), [extraPaletteIds]);
 
   // The design a slide currently renders with, fully resolved (no inherited fields) — what gets
   // saved to Favorites. Includes carousel-wide settings, since they're part of the visible look too.
@@ -143,6 +158,18 @@ export default function App() {
   };
 
   const removeFavorite = (id: string) => setFavorites((f) => f.filter((fav) => fav.id !== id));
+
+  const exportFavorites = () => downloadFavorites(favorites);
+
+  // Merges the imported designs in, skipping any that duplicate a design already in favorites.
+  const importFavoritesFile = async (file: File) => {
+    try {
+      const imported = parseFavoritesFile(await file.text());
+      setFavorites((f) => [...f, ...imported.filter((design) => !f.some((existing) => sameDesign(existing, design)))]);
+    } catch {
+      window.alert('לא ניתן לקרוא את קובץ המועדפים');
+    }
+  };
 
   const applyFavoriteToAll = (favoriteId: string) =>
     setCarousel((c) => {
@@ -195,6 +222,30 @@ export default function App() {
         style: { ...s.style, paletteId: undefined, roles: undefined },
       })),
     }));
+
+  // Marks a palette as disliked: it drops out of the picker and the pool backfills the grid
+  // with the next available palette so the grid stays the same size. If it was the active
+  // carousel palette, switches to whichever palette now sits in its old spot in the picker.
+  const dislikePalette = (paletteId: string) => {
+    const oldIndex = getVisiblePalettes(new Set(dislikedPaletteIds), extraPaletteIds).findIndex(
+      (p) => p.id === paletteId,
+    );
+    const nextDisliked = [...dislikedPaletteIds, paletteId];
+    const nextPoolPalette = pickNextPoolPalette(extraPaletteIds);
+    const nextExtra = nextPoolPalette ? [...extraPaletteIds, nextPoolPalette.id] : extraPaletteIds;
+    setDislikedPaletteIds(nextDisliked);
+    setExtraPaletteIds(nextExtra);
+    if (carousel.paletteId === paletteId) {
+      const nextVisible = getVisiblePalettes(new Set(nextDisliked), nextExtra);
+      const replacement = nextVisible[oldIndex] ?? nextVisible[0];
+      if (replacement) changePalette(replacement.id);
+    }
+  };
+
+  // Just un-hides the palette; the pool palette that backfilled for it stays, so the
+  // grid can end up with more than 20 options once palettes have been disliked and restored.
+  const restorePalette = (paletteId: string) =>
+    setDislikedPaletteIds((ids) => ids.filter((id) => id !== paletteId));
 
   // Cycling a variation is a carousel-wide design change too: per-slide
   // color-role overrides reset so the new combination shows everywhere.
@@ -319,6 +370,13 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setPostOpen(true)}
+              className="rounded-lg border border-[#E1306C] px-4 py-2 text-sm font-semibold text-[#E1306C] transition hover:bg-[#E1306C]/5"
+            >
+              פרסום לאינסטגרם
+            </button>
+            <button
+              type="button"
               disabled={exporting}
               onClick={handleDownloadImages}
               className="rounded-lg border border-[#E1306C] px-4 py-2 text-sm font-semibold text-[#E1306C] transition hover:bg-[#E1306C]/5 disabled:opacity-50"
@@ -357,7 +415,13 @@ export default function App() {
           </div>
 
           {sidebarTab === 'favorites' ? (
-            <FavoritesPanel favorites={favorites} onApply={applyFavoriteToAll} onRemove={removeFavorite} />
+            <FavoritesPanel
+              favorites={favorites}
+              onApply={applyFavoriteToAll}
+              onRemove={removeFavorite}
+              onExport={exportFavorites}
+              onImportFile={importFavoritesFile}
+            />
           ) : (
           <>
           <div>
@@ -401,7 +465,12 @@ export default function App() {
               })()}
             </div>
             {palettesOpen ? (
-              <PalettePicker value={carousel.paletteId} onChange={changePalette} />
+              <PalettePicker
+                palettes={getVisiblePalettes(new Set(dislikedPaletteIds), extraPaletteIds)}
+                value={carousel.paletteId}
+                onChange={changePalette}
+                onDislike={dislikePalette}
+              />
             ) : (
               // Collapsed: compact view of the selected palette; click expands the full list.
               <button
@@ -418,6 +487,12 @@ export default function App() {
                 <span className="text-xs font-medium text-neutral-700">{getPalette(carousel.paletteId).name}</span>
               </button>
             )}
+            <div className="mt-2">
+              <DislikedPalettesPanel
+                palettes={dislikedPaletteIds.map(getPalette)}
+                onRestore={restorePalette}
+              />
+            </div>
           </div>
           <div>
             <p className="mb-2 text-xs font-medium text-neutral-500">פונט</p>
@@ -639,6 +714,10 @@ export default function App() {
           />
         );
       })()}
+
+      {postOpen && (
+        <PostToInstagramModal nodes={slideEls()} defaultCaption={carousel.title} onClose={() => setPostOpen(false)} />
+      )}
     </div>
   );
 }

@@ -32,22 +32,34 @@ const MIN_USEFUL = 6;
 
 const cache = new Map<string, Roles[]>();
 
-function collect(palette: Palette, minText: number, minAccent: number): { roles: Roles; score: number }[] {
+function collect(colors: readonly string[], minText: number, minAccent: number): { roles: Roles; score: number }[] {
   const scored: { roles: Roles; score: number }[] = [];
   for (let bg = 0; bg < 5; bg++) {
     for (let text = 0; text < 5; text++) {
       if (text === bg) continue;
-      const textContrast = contrast(palette.colors[bg], palette.colors[text]);
+      const textContrast = contrast(colors[bg], colors[text]);
       if (textContrast < minText) continue;
       for (let accent = 0; accent < 5; accent++) {
         if (accent === bg || accent === text) continue;
-        const accentContrast = contrast(palette.colors[bg], palette.colors[accent]);
+        const accentContrast = contrast(colors[bg], colors[accent]);
         if (accentContrast < minAccent) continue;
         scored.push({ roles: { bg, text, accent }, score: textContrast + accentContrast });
       }
     }
   }
   return scored;
+}
+
+/** Picks the highest-contrast readable (bg, text, accent) combo for a fresh palette with no curated default. */
+export function bestRoles(colors: readonly string[]): Roles {
+  for (const [minText, minAccent] of THRESHOLDS) {
+    const scored = collect(colors, minText, minAccent);
+    if (scored.length > 0) {
+      scored.sort((a, b) => b.score - a.score);
+      return scored[0].roles;
+    }
+  }
+  return { bg: 0, text: 1, accent: 2 };
 }
 
 /**
@@ -60,7 +72,7 @@ export function getVariations(palette: Palette): Roles[] {
 
   let scored: { roles: Roles; score: number }[] = [];
   for (const [minText, minAccent] of THRESHOLDS) {
-    scored = collect(palette, minText, minAccent);
+    scored = collect(palette.colors, minText, minAccent);
     if (scored.length >= MIN_USEFUL) break;
   }
   scored.sort((a, b) => b.score - a.score);
