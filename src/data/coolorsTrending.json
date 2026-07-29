@@ -1,0 +1,527 @@
+[
+  {
+    "name": "Fiery Ocean",
+    "colors": [
+      "#780000",
+      "#c1121f",
+      "#fdf0d5",
+      "#003049",
+      "#669bbc"
+    ]
+  },
+  {
+    "name": "Olive Garden Feast",
+    "colors": [
+      "#606c38",
+      "#283618",
+      "#fefae0",
+      "#dda15e",
+      "#bc6c25"
+    ]
+  },
+  {
+    "name": "Ocean Blue Serenity",
+    "colors": [
+      "#03045e",
+      "#023e8a",
+      "#0077b6",
+      "#0096c7",
+      "#00b4d8",
+      "#48cae4",
+      "#90e0ef",
+      "#ade8f4",
+      "#caf0f8"
+    ]
+  },
+  {
+    "name": "Pastel Dreamland Adventure",
+    "colors": [
+      "#cdb4db",
+      "#ffc8dd",
+      "#ffafcc",
+      "#bde0fe",
+      "#a2d2ff"
+    ]
+  },
+  {
+    "name": "Bold Berry",
+    "colors": [
+      "#f9dbbd",
+      "#ffa5ab",
+      "#da627d",
+      "#a53860",
+      "#450920"
+    ]
+  },
+  {
+    "name": "Ocean Sunset",
+    "colors": [
+      "#001219",
+      "#005f73",
+      "#0a9396",
+      "#94d2bd",
+      "#e9d8a6",
+      "#ee9b00",
+      "#ca6702",
+      "#bb3e03",
+      "#ae2012",
+      "#9b2226"
+    ]
+  },
+  {
+    "name": "Deep Sea",
+    "colors": [
+      "#0d1b2a",
+      "#1b263b",
+      "#415a77",
+      "#778da9",
+      "#e0e1dd"
+    ]
+  },
+  {
+    "name": "Dark Sunset",
+    "colors": [
+      "#335c67",
+      "#fff3b0",
+      "#e09f3e",
+      "#9e2a2b",
+      "#540b0e"
+    ]
+  },
+  {
+    "name": "Refreshing Summer Fun",
+    "colors": [
+      "#8ecae6",
+      "#219ebc",
+      "#023047",
+      "#ffb703",
+      "#fb8500"
+    ]
+  },
+  {
+    "name": "Fresh Greens",
+    "colors": [
+      "#386641",
+      "#6a994e",
+      "#a7c957",
+      "#f2e8cf",
+      "#bc4749"
+    ]
+  },
+  {
+    "name": "Earthy Green",
+    "colors": [
+      "#cad2c5",
+      "#84a98c",
+      "#52796f",
+      "#354f52",
+      "#2f3e46"
+    ]
+  },
+  {
+    "name": "Sunny Beach Day",
+    "colors": [
+      "#264653",
+      "#2a9d8f",
+      "#e9c46a",
+      "#f4a261",
+      "#e76f51"
+    ]
+  },
+  {
+    "name": "Peachy Delight",
+    "colors": [
+      "#d8e2dc",
+      "#ffe5d9",
+      "#ffcad4",
+      "#f4acb7",
+      "#9d8189"
+    ]
+  },
+  {
+    "name": "Fiery Red Sunset",
+    "colors": [
+      "#03071e",
+      "#370617",
+      "#6a040f",
+      "#9d0208",
+      "#d00000",
+      "#dc2f02",
+      "#e85d04",
+      "#f48c06",
+      "#faa307",
+      "#ffba08"
+    ]
+  },
+  {
+    "name": "Soft Pink Delight",
+    "colors": [
+      "#ffe5ec",
+      "#ffc2d1",
+      "#ffb3c6",
+      "#ff8fab",
+      "#fb6f92"
+    ]
+  },
+  {
+    "name": "Summer Ocean Breeze",
+    "colors": [
+      "#e63946",
+      "#f1faee",
+      "#a8dadc",
+      "#457b9d",
+      "#1d3557"
+    ]
+  },
+  {
+    "name": "Ocean Breeze",
+    "colors": [
+      "#03045e",
+      "#0077b6",
+      "#00b4d8",
+      "#90e0ef",
+      "#caf0f8"
+    ]
+  },
+  {
+    "name": "Soft Lavender",
+    "colors": [
+      "#22223b",
+      "#4a4e69",
+      "#9a8c98",
+      "#c9ada7",
+      "#f2e9e4"
+    ]
+  },
+  {
+    "name": "Golden Summer Fields",
+    "colors": [
+      "#ccd5ae",
+      "#e9edc9",
+      "#fefae0",
+      "#faedcd",
+      "#d4a373"
+    ]
+  },
+  {
+    "name": "Soft Sand",
+    "colors": [
+      "#edede9",
+      "#d6ccc2",
+      "#f5ebe0",
+      "#e3d5ca",
+      "#d5bdaf"
+    ]
+  },
+  {
+    "name": "Cherry Blossom Bloom",
+    "colors": [
+      "#590d22",
+      "#800f2f",
+      "#a4133c",
+      "#c9184a",
+      "#ff4d6d",
+      "#ff758f",
+      "#ff8fa3",
+      "#ffb3c1",
+      "#ffccd5",
+      "#fff0f3"
+    ]
+  },
+  {
+    "name": "Light Steel",
+    "colors": [
+      "#f8f9fa",
+      "#e9ecef",
+      "#dee2e6",
+      "#ced4da",
+      "#adb5bd",
+      "#6c757d",
+      "#495057",
+      "#343a40",
+      "#212529"
+    ]
+  },
+  {
+    "name": "Earthy Tones",
+    "colors": [
+      "#edafb8",
+      "#f7e1d7",
+      "#dedbd2",
+      "#b0c4b1",
+      "#4a5759"
+    ]
+  },
+  {
+    "name": "Pastel Dreams",
+    "colors": [
+      "#ff99c8",
+      "#fcf6bd",
+      "#d0f4de",
+      "#a9def9",
+      "#e4c1f9"
+    ]
+  },
+  {
+    "name": "Black & Gold Elegance",
+    "colors": [
+      "#000000",
+      "#14213d",
+      "#fca311",
+      "#e5e5e5",
+      "#ffffff"
+    ]
+  },
+  {
+    "name": "Autumn Harvest",
+    "colors": [
+      "#6f1d1b",
+      "#bb9457",
+      "#432818",
+      "#99582a",
+      "#ffe6a7"
+    ]
+  },
+  {
+    "name": "Deep Blue Sea",
+    "colors": [
+      "#134074",
+      "#13315c",
+      "#0b2545",
+      "#8da9c4",
+      "#eef4ed"
+    ]
+  },
+  {
+    "name": "Vibrant Spring",
+    "colors": [
+      "#3c1642",
+      "#086375",
+      "#1dd3b0",
+      "#affc41",
+      "#b2ff9e"
+    ]
+  },
+  {
+    "name": "Whimsical Dreams",
+    "colors": [
+      "#9f9aa4",
+      "#e7cfcd",
+      "#cfd8d7",
+      "#b5c9c3",
+      "#cab1bd"
+    ]
+  },
+  {
+    "name": "Unnamed",
+    "colors": [
+      "#f8f5f0",
+      "#721321",
+      "#dac086",
+      "#1a1a1a"
+    ]
+  },
+  {
+    "name": "Watermelon Sorbet",
+    "colors": [
+      "#ef476f",
+      "#ffd166",
+      "#06d6a0",
+      "#118ab2",
+      "#073b4c"
+    ]
+  },
+  {
+    "name": "Rose Petal",
+    "colors": [
+      "#880d1e",
+      "#dd2d4a",
+      "#f26a8d",
+      "#f49cbb",
+      "#cbeef3"
+    ]
+  },
+  {
+    "name": "Autumn Sunset",
+    "colors": [
+      "#461220",
+      "#8c2f39",
+      "#b23a48",
+      "#fcb9b2",
+      "#fed0bb"
+    ]
+  },
+  {
+    "name": "Warm Neutral Tones",
+    "colors": [
+      "#582f0e",
+      "#7f4f24",
+      "#936639",
+      "#a68a64",
+      "#b6ad90",
+      "#c2c5aa",
+      "#a4ac86",
+      "#656d4a",
+      "#414833",
+      "#333d29"
+    ]
+  },
+  {
+    "name": "Leafy Green Garden",
+    "colors": [
+      "#132a13",
+      "#31572c",
+      "#4f772d",
+      "#90a955",
+      "#ecf39e"
+    ]
+  },
+  {
+    "name": "Monochrome Beach",
+    "colors": [
+      "#353535",
+      "#3c6e71",
+      "#ffffff",
+      "#d9d9d9",
+      "#284b63"
+    ]
+  },
+  {
+    "name": "Earthy Tones 2",
+    "colors": [
+      "#a3a380",
+      "#d6ce93",
+      "#efebce",
+      "#d8a48f",
+      "#bb8588"
+    ]
+  },
+  {
+    "name": "Soft Rainbow",
+    "colors": [
+      "#fbf8cc",
+      "#fde4cf",
+      "#ffcfd2",
+      "#f1c0e8",
+      "#cfbaf0",
+      "#a3c4f3",
+      "#90dbf4",
+      "#8eecf5",
+      "#98f5e1",
+      "#b9fbc0"
+    ]
+  },
+  {
+    "name": "Vibrant Tones",
+    "colors": [
+      "#f94144",
+      "#f3722c",
+      "#f8961e",
+      "#f9844a",
+      "#f9c74f",
+      "#90be6d",
+      "#43aa8b",
+      "#4d908e",
+      "#577590",
+      "#277da1"
+    ]
+  },
+  {
+    "name": "Bold Hues",
+    "colors": [
+      "#f72585",
+      "#7209b7",
+      "#3a0ca3",
+      "#4361ee",
+      "#4cc9f0"
+    ]
+  },
+  {
+    "name": "Sunny Beach Day 2",
+    "colors": [
+      "#001524",
+      "#15616d",
+      "#ffecd1",
+      "#ff7d00",
+      "#78290f"
+    ]
+  },
+  {
+    "name": "Warm Autumn Glow",
+    "colors": [
+      "#003049",
+      "#d62828",
+      "#f77f00",
+      "#fcbf49",
+      "#eae2b7"
+    ]
+  },
+  {
+    "name": "Turquoise Harmony",
+    "colors": [
+      "#05668d",
+      "#028090",
+      "#00a896",
+      "#02c39a",
+      "#f0f3bd"
+    ]
+  },
+  {
+    "name": "Meadow Green",
+    "colors": [
+      "#d9ed92",
+      "#b5e48c",
+      "#99d98c",
+      "#76c893",
+      "#52b69a",
+      "#34a0a4",
+      "#168aad",
+      "#1a759f",
+      "#1e6091",
+      "#184e77"
+    ]
+  },
+  {
+    "name": "Bright Green",
+    "colors": [
+      "#004b23",
+      "#006400",
+      "#007200",
+      "#008000",
+      "#38b000",
+      "#70e000",
+      "#9ef01a",
+      "#ccff33"
+    ]
+  },
+  {
+    "name": "Ocean Breeze 2",
+    "colors": [
+      "#16697a",
+      "#489fb5",
+      "#82c0cc",
+      "#ede7e3",
+      "#ffa62b"
+    ]
+  },
+  {
+    "name": "Cool Waters",
+    "colors": [
+      "#22577a",
+      "#38a3a5",
+      "#57cc99",
+      "#80ed99",
+      "#c7f9cc"
+    ]
+  },
+  {
+    "name": "Golden Summer Glow",
+    "colors": [
+      "#0d3b66",
+      "#faf0ca",
+      "#f4d35e",
+      "#ee964b",
+      "#f95738"
+    ]
+  }
+]
