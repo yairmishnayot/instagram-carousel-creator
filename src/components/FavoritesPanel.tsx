@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { FavoriteDesign } from '../types';
 import { getPalette, roleColor } from '../palettes';
 
@@ -5,23 +6,54 @@ interface Props {
   favorites: FavoriteDesign[];
   onApply: (favoriteId: string) => void;
   onRemove: (favoriteId: string) => void;
+  onExport: () => void;
+  onImportFile: (file: File) => void;
 }
 
 const SIZE_LABELS = { S: 'קטן', M: 'בינוני', L: 'גדול' } as const;
 const ALIGN_LABELS = { right: 'ימין', center: 'מרכז' } as const;
 const BACKGROUND_LABELS = { solid: 'צבע אחיד', blurred: 'רקע מטושטש' } as const;
 
-export default function FavoritesPanel({ favorites, onApply, onRemove }: Props) {
-  if (favorites.length === 0) {
-    return (
-      <p className="rounded-xl border border-dashed border-neutral-300 px-3 py-4 text-center text-xs text-neutral-400">
-        אין עדיין עיצובים מועדפים. לחצו על ⭐ ליד שקופית כדי לשמור את העיצוב שלה לכאן.
-      </p>
-    );
-  }
+export default function FavoritesPanel({ favorites, onApply, onRemove, onExport, onImportFile }: Props) {
+  const importInput = useRef<HTMLInputElement>(null);
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="flex gap-2">
+        <input
+          ref={importInput}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onImportFile(file);
+            e.target.value = '';
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => importInput.current?.click()}
+          className="flex-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 transition hover:border-[#E1306C] hover:text-[#E1306C]"
+        >
+          ייבוא מקובץ
+        </button>
+        <button
+          type="button"
+          disabled={favorites.length === 0}
+          onClick={onExport}
+          className="flex-1 rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 transition hover:border-[#E1306C] hover:text-[#E1306C] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          ייצוא לקובץ
+        </button>
+      </div>
+
+      {favorites.length === 0 && (
+        <p className="rounded-xl border border-dashed border-neutral-300 px-3 py-4 text-center text-xs text-neutral-400">
+          אין עדיין עיצובים מועדפים. לחצו על ⭐ ליד שקופית כדי לשמור את העיצוב שלה לכאן, או ייבאו קובץ מועדפים.
+        </p>
+      )}
+
       {favorites.map((fav) => {
         const palette = getPalette(fav.paletteId);
         return (
