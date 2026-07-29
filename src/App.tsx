@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { BackgroundStyle, Carousel, DesignSnapshot, FavoriteDesign, LogoStyle, Ratio, Slide, SlideStyle } from './types';
 import { MAX_SLIDES, SLIDE_W, SLIDE_H } from './types';
 import { loadDraft, saveDraft, emptyCarousel, newSlideId } from './storage';
-import { loadFavorites, saveFavorites, newFavoriteId, sameDesign } from './favorites';
+import { loadFavorites, saveFavorites, newFavoriteId, sameDesign, downloadFavorites, parseFavoritesFile } from './favorites';
 import { getPalette, getVisiblePalettes, pickNextPoolPalette, roleColor } from './palettes';
 import {
   loadDislikedPaletteIds,
@@ -156,6 +156,18 @@ export default function App() {
   };
 
   const removeFavorite = (id: string) => setFavorites((f) => f.filter((fav) => fav.id !== id));
+
+  const exportFavorites = () => downloadFavorites(favorites);
+
+  // Merges the imported designs in, skipping any that duplicate a design already in favorites.
+  const importFavoritesFile = async (file: File) => {
+    try {
+      const imported = parseFavoritesFile(await file.text());
+      setFavorites((f) => [...f, ...imported.filter((design) => !f.some((existing) => sameDesign(existing, design)))]);
+    } catch {
+      window.alert('לא ניתן לקרוא את קובץ המועדפים');
+    }
+  };
 
   const applyFavoriteToAll = (favoriteId: string) =>
     setCarousel((c) => {
@@ -394,7 +406,13 @@ export default function App() {
           </div>
 
           {sidebarTab === 'favorites' ? (
-            <FavoritesPanel favorites={favorites} onApply={applyFavoriteToAll} onRemove={removeFavorite} />
+            <FavoritesPanel
+              favorites={favorites}
+              onApply={applyFavoriteToAll}
+              onRemove={removeFavorite}
+              onExport={exportFavorites}
+              onImportFile={importFavoritesFile}
+            />
           ) : (
           <>
           <div>
