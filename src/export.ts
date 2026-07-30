@@ -1,5 +1,4 @@
 import { toPng } from 'html-to-image';
-import JSZip from 'jszip';
 
 export function safeTitle(title: string): string {
   const cleaned = title.trim().replace(/[\\/:*?"<>|]+/g, '-');
@@ -38,20 +37,4 @@ export async function downloadAllImages(
     // Small gap between downloads so the browser doesn't drop any of them.
     await new Promise((r) => setTimeout(r, 300));
   }
-}
-
-export async function downloadAll(
-  nodes: HTMLElement[],
-  title: string,
-): Promise<void> {
-  const zip = new JSZip();
-  const prefix = safeTitle(title);
-  for (let i = 0; i < nodes.length; i++) {
-    const dataUrl = await capture(nodes[i]);
-    zip.file(`${prefix}-${i + 1}.png`, dataUrl.split(',')[1], { base64: true });
-  }
-  const blob = await zip.generateAsync({ type: 'blob' });
-  const url = URL.createObjectURL(blob);
-  triggerDownload(url, `${prefix}.zip`);
-  URL.revokeObjectURL(url);
 }

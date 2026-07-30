@@ -13,7 +13,7 @@ import {
 import { BACKDROPS, getBackdrop } from './backdrops';
 import { FONTS } from './fonts';
 import { getVariations, variationIndex } from './variations';
-import { downloadAll, downloadAllImages, downloadSlide } from './export';
+import { downloadAllImages, downloadSlide } from './export';
 import PalettePicker from './components/PalettePicker';
 import DislikedPalettesPanel from './components/DislikedPalettesPanel';
 import SlideCard from './components/SlideCard';
@@ -98,7 +98,7 @@ export default function App() {
   const [extraPaletteIds, setExtraPaletteIds] = useState<string[]>(loadExtraPaletteIds);
   const [sidebarTab, setSidebarTab] = useState<SidebarTab>('design');
   const [exporting, setExporting] = useState(false);
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
   const [palettesOpen, setPalettesOpen] = useState(true);
   const [backdropsOpen, setBackdropsOpen] = useState(true);
   const nodes = useRef(new Map<string, HTMLDivElement>());
@@ -318,15 +318,6 @@ export default function App() {
       .map((s) => nodes.current.get(s.id))
       .filter((el): el is HTMLDivElement => !!el);
 
-  const handleDownloadAll = async () => {
-    setExporting(true);
-    try {
-      await downloadAll(slideEls(), carousel.title);
-    } finally {
-      setExporting(false);
-    }
-  };
-
   const handleDownloadImages = async () => {
     setExporting(true);
     try {
@@ -362,25 +353,24 @@ export default function App() {
             <button
               type="button"
               onClick={resetAll}
-              className="rounded-lg px-3 py-2 text-xs font-medium text-neutral-500 hover:bg-neutral-100"
+              className="cursor-pointer rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-500 transition hover:bg-neutral-100"
             >
               נקה הכל
             </button>
             <button
               type="button"
-              disabled={exporting}
-              onClick={handleDownloadImages}
-              className="rounded-lg border border-[#E1306C] px-4 py-2 text-sm font-semibold text-[#E1306C] transition hover:bg-[#E1306C]/5 disabled:opacity-50"
+              onClick={() => setPreviewIndex(0)}
+              className="cursor-pointer rounded-lg border border-neutral-200 px-4 py-2 text-sm font-medium text-neutral-500 transition hover:bg-neutral-100"
             >
-              {exporting ? 'מכין קבצים…' : 'הורדת תמונות'}
+              תצוגת קרוסלה
             </button>
             <button
               type="button"
               disabled={exporting}
-              onClick={handleDownloadAll}
-              className="rounded-lg bg-[#E1306C] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#c62a5f] disabled:opacity-50"
+              onClick={handleDownloadImages}
+              className="cursor-pointer rounded-lg border border-[#E1306C] bg-[#E1306C] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#c62a5f] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {exporting ? 'מכין קבצים…' : 'הורדת הכל (ZIP)'}
+              {exporting ? 'מכין קבצים…' : 'הורדת תמונות'}
             </button>
           </div>
         </div>
@@ -673,7 +663,7 @@ export default function App() {
             onApplyStyleToAll={() => applyStyleToAll(slide.id)}
             onDelete={() => deleteSlide(slide.id)}
             onDownload={() => handleDownloadOne(slide, i)}
-            onPreview={() => setPreviewId(slide.id)}
+            onPreview={() => setPreviewIndex(i)}
             favorited={isFavorited(slide)}
             onFavorite={() => favoriteSlide(slide)}
           />
@@ -692,19 +682,14 @@ export default function App() {
         </div>
       </main>
 
-      {(() => {
-        const i = carousel.slides.findIndex((s) => s.id === previewId);
-        if (i < 0) return null;
-        return (
-          <SlidePreviewModal
-            slide={carousel.slides[i]}
-            carousel={carousel}
-            index={i}
-            total={carousel.slides.length}
-            onClose={() => setPreviewId(null)}
-          />
-        );
-      })()}
+      {previewIndex !== null && (
+        <SlidePreviewModal
+          slides={carousel.slides}
+          carousel={carousel}
+          startIndex={previewIndex}
+          onClose={() => setPreviewIndex(null)}
+        />
+      )}
     </div>
   );
 }

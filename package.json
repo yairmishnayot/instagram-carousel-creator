@@ -21,7 +21,6 @@
     "@fontsource/suez-one": "^5.2.8",
     "@fontsource/varela-round": "^5.2.8",
     "html-to-image": "^1.11.13",
-    "jszip": "^3.10.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
